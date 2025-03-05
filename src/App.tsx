@@ -17,12 +17,10 @@ import type {
 
 import { Sidebar } from "./Sidebar";
 import { Spinner } from "./Spinner";
-import { testHighlights as _testHighlights } from "./test-highlights";
 
 import "./App.css";
 import "./../node_modules/react-pdf-highlighter/dist/style.css"
 
-const testHighlights: Record<string, Array<IHighlight>> = _testHighlights;
 
 const getNextId = () => String(Math.random()).slice(2);
 
@@ -45,26 +43,33 @@ const HighlightPopup = ({
   ) : null;
 
 const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
-const SECONDARY_PDF_URL = "https://arxiv.org/pdf/1604.02480";
 
 export function App() {
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const searchParams = new URLSearchParams(document.location.search);
   const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 
   const [url, setUrl] = useState(initialUrl);
   const [highlights, setHighlights] = useState<Array<IHighlight>>(
-    testHighlights[initialUrl] ? [...testHighlights[initialUrl]] : [],
+  [],
   );
 
   const resetHighlights = () => {
     setHighlights([]);
   };
 
-  const toggleDocument = () => {
-    const newUrl =
-      url === PRIMARY_PDF_URL ? SECONDARY_PDF_URL : PRIMARY_PDF_URL;
-    setUrl(newUrl);
-    setHighlights(testHighlights[newUrl] ? [...testHighlights[newUrl]] : []);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file && file.type === "application/pdf") {
+      const url = URL.createObjectURL(file);
+      setPdfUrl(url);
+      setUrl(url);
+      setHighlights([]);
+    } else {
+      alert("Please upload a valid PDF file.");
+    }
   };
 
   const scrollViewerTo = useRef((highlight: IHighlight) => {});
@@ -127,10 +132,17 @@ export function App() {
 
   return (
     <div className="App" style={{ display: "flex", height: "100vh" }}>
-      {/* <Sidebar
+      <div>
+      <input 
+        type="file" 
+        accept="application/pdf" 
+        onChange={handleFileUpload} 
+        className="mb-4"
+      />
+      </div>
+      <Sidebar
         highlights={highlights}
         resetHighlights={resetHighlights}
-        toggleDocument={toggleDocument}
       />
       <div
         style={{
@@ -138,7 +150,7 @@ export function App() {
           width: "75vw",
           position: "relative",
         }}
-      > */}
+      >
         <PdfLoader url={url} beforeLoad={<Spinner />}>
           {(pdfDocument) => (
             <PdfHighlighter
