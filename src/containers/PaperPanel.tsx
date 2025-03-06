@@ -1,28 +1,30 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { Box } from "@mui/material";
-
+import "./PaperPanel.css";
 import {
-  AreaHighlight,
-  Highlight,
-  PdfHighlighter,
-  PdfLoader,
-  Popup,
-  Tip,
+    AreaHighlight,
+    Highlight,
+    PdfHighlighter,
+    PdfLoader,
+    Popup,
+    Tip,
 } from "react-pdf-highlighter";
 import type {
-  Content,
-  IHighlight,
-  NewHighlight,
-  ScaledPosition,
+    IHighlight,
 } from "react-pdf-highlighter";
 
 import { Sidebar } from "../components/paper-components/Sidebar";
 import { Spinner } from "../components/paper-components/Spinner";
+import { PaperContext } from "../contexts/PaperContext";
 
 
 function PaperPanel() {
+    const paperContext = useContext(PaperContext);
+    if (!paperContext) {
+        throw new Error("PaperContext not found");
+    }
+    const { highlights, addHighlight, updateHighlight, resetHighlights } = paperContext;
 
-    const getNextId = () => String(Math.random()).slice(2);
 
     const parseIdFromHash = () =>
         document.location.hash.slice("#highlight-".length);
@@ -49,14 +51,6 @@ function PaperPanel() {
     const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 
     const [url, setUrl] = useState(initialUrl);
-    const [highlights, setHighlights] = useState<Array<IHighlight>>(
-        [],
-    );
-
-    const resetHighlights = () => {
-        setHighlights([]);
-    };
-
 
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -65,7 +59,7 @@ function PaperPanel() {
             const url = URL.createObjectURL(file);
             setPdfUrl(url);
             setUrl(url);
-            setHighlights([]);
+            resetHighlights();
         } else {
             alert("Please upload a valid PDF file.");
         }
@@ -94,59 +88,26 @@ function PaperPanel() {
     const getHighlightById = (id: string) => {
         return highlights.find((highlight) => highlight.id === id);
     };
-
-    const addHighlight = (highlight: NewHighlight) => {
-        console.log("Saving highlight", highlight);
-        setHighlights((prevHighlights) => [
-            { ...highlight, id: getNextId() },
-            ...prevHighlights,
-        ]);
-    };
-
-    const updateHighlight = (
-        highlightId: string,
-        position: Partial<ScaledPosition>,
-        content: Partial<Content>,
-    ) => {
-        console.log("Updating highlight", highlightId, position, content);
-        setHighlights((prevHighlights) =>
-            prevHighlights.map((h) => {
-                const {
-                    id,
-                    position: originalPosition,
-                    content: originalContent,
-                    ...rest
-                } = h;
-                return id === highlightId
-                    ? {
-                        id,
-                        position: { ...originalPosition, ...position },
-                        content: { ...originalContent, ...content },
-                        ...rest,
-                    }
-                    : h;
-            }),
-        );
-    };
+    
 
     return (
-        <Box style={{ width: '100%', height: '100%' }}>
-            <div>
+        <Box style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'row' }}>
+            {/* <div>
                 <input
                     type="file"
                     accept="application/pdf"
                     onChange={handleFileUpload}
                     className="mb-4"
                 />
-            </div>
+            </div> */}
             <Sidebar
                 highlights={highlights}
                 resetHighlights={resetHighlights}
             />
             <div
                 style={{
-                    height: "100vh",
-                    width: "75vw",
+                    height: "100%",
+                    width: "75%",
                     position: "relative",
                 }}
             >

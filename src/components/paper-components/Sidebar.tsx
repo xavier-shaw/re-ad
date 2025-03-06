@@ -1,4 +1,5 @@
 import type { IHighlight } from "react-pdf-highlighter";
+import "./Sidebar.css";
 
 interface Props {
   highlights: Array<IHighlight>;
@@ -15,10 +16,8 @@ export function Sidebar({
   resetHighlights,
 }: Props) {
   return (
-    <div className="sidebar" style={{ width: "25vw" }}>
+    <div className="sidebar" style={{ width: "25%" }}>
       <div className="description" style={{ padding: "1rem" }}>
-
-
         <p>
           <small>
             To create area highlight hold ⌥ Option key (Alt), then click and
