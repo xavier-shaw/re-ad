@@ -17,10 +17,10 @@ import {
     MarkerType,
 } from '@xyflow/react';
 import { Box, Button } from '@mui/material';
-import HighlightNode from './HighlightNode';
-import OverviewNode from './OverviewNode';
-import TemporalEdge from './TemporalEdge';
-import RelationEdge from './RelationEdge';
+import HighlightNode from '../components/graph-components/HighlightNode';
+import OverviewNode from '../components/graph-components/OverviewNode';
+import TemporalEdge from '../components/graph-components/TemporalEdge';
+import RelationEdge from '../components/graph-components/RelationEdge';
 
 
 const onNodeDrag: OnNodeDrag = (_, node) => {
