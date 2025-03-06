@@ -16,8 +16,8 @@ import type {
   ScaledPosition,
 } from "react-pdf-highlighter";
 
-import { Sidebar } from "../components/pdf-components/Sidebar";
-import { Spinner } from "../components/pdf-components/Spinner";
+import { Sidebar } from "../components/paper-components/Sidebar";
+import { Spinner } from "../components/paper-components/Spinner";
 
 
 function PaperPanel() {
