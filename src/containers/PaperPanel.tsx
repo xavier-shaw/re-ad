@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { Box } from "@mui/material";
-import "./PaperPanel.css";
+import "../styles/PaperPanel.css";
 import {
     AreaHighlight,
     Highlight,
@@ -17,13 +17,12 @@ import { Sidebar } from "../components/paper-components/Sidebar";
 import { Spinner } from "../components/paper-components/Spinner";
 import { PaperContext } from "../contexts/PaperContext";
 
-
 function PaperPanel() {
     const paperContext = useContext(PaperContext);
     if (!paperContext) {
         throw new Error("PaperContext not found");
     }
-    const { highlights, addHighlight, updateHighlight, resetHighlights } = paperContext;
+    const { highlights, addHighlight, updateHighlight, resetHighlights, selectedHighlightId, setSelectedHighlightId } = paperContext;
 
 
     const parseIdFromHash = () =>
@@ -67,28 +66,34 @@ function PaperPanel() {
 
     const scrollViewerTo = useRef((highlight: IHighlight) => { });
 
-    const scrollToHighlightFromHash = useCallback(() => {
-        const highlight = getHighlightById(parseIdFromHash());
-        if (highlight) {
-            scrollViewerTo.current(highlight);
+    const scrollToHighlight = useCallback(() => {
+        if (selectedHighlightId) {
+            const highlight = getHighlightById(selectedHighlightId);
+            if (highlight) {
+                scrollViewerTo.current(highlight);
+            }
         }
-    }, []);
+    }, [selectedHighlightId]);
 
-    useEffect(() => {
-        window.addEventListener("hashchange", scrollToHighlightFromHash, false);
-        return () => {
-            window.removeEventListener(
-                "hashchange",
-                scrollToHighlightFromHash,
-                false,
-            );
-        };
-    }, [scrollToHighlightFromHash]);
+    // useEffect(() => {
+    //     window.addEventListener("hashchange", scrollToHighlight, false);
+    //     return () => {
+    //         window.removeEventListener(
+    //             "hashchange",
+    //             scrollToHighlight,
+    //             false,
+    //         );
+    //     };
+    // }, [scrollToHighlight]);
 
     const getHighlightById = (id: string) => {
         return highlights.find((highlight) => highlight.id === id);
     };
-    
+
+    useEffect(() => {
+        console.log('selectedHighlightId', selectedHighlightId);
+
+    }, [selectedHighlightId]);
 
     return (
         <Box style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'row' }}>
@@ -119,7 +124,7 @@ function PaperPanel() {
                             onScrollChange={resetHash}
                             scrollRef={(scrollTo) => {
                                 scrollViewerTo.current = scrollTo;
-                                scrollToHighlightFromHash();
+                                scrollToHighlight();
                             }}
                             onSelectionFinished={(
                                 position,
