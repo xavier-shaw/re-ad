@@ -1,6 +1,7 @@
 import { Handle, NodeProps, Node, Position } from "@xyflow/react";
 import { Box } from "@mui/material";
-import './OverviewNode.css';
+import "../../styles/OverviewNode.css";
+
 export default function OverviewNode({ data }: NodeProps<Node>) {
     const { label, content } = data as { label: string; content: string };
     return (
