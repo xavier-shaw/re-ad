@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { Content, IHighlight, NewHighlight, ScaledPosition } from "react-pdf-highlighter";
-import { type Node, type Edge, useNodesState, useEdgesState, type OnNodesChange, type OnEdgesChange, addEdge, Connection } from "@xyflow/react";
+import { type Node, type Edge, useNodesState, useEdgesState, type OnNodesChange, type OnEdgesChange, addEdge, Connection, MarkerType } from "@xyflow/react";
 
 type PaperContextData = {
     highlights: Array<IHighlight>
@@ -75,9 +75,10 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
                 ...prevEdges,
                 {
                     id: `temporal-${readId}-${temporalSeq}`,
-                    type: 'temporal',
                     source: highlights[highlights.length - 1]?.id,
                     target: `${readId}-${temporalSeq}`,
+                    type: 'temporal',
+                    markerEnd: { type: MarkerType.Arrow },
                 },
             ]);
         }
