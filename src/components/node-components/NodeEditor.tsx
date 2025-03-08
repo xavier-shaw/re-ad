@@ -4,6 +4,7 @@ import References from './References';
 import Notes from './Notes';
 import LinkButton from './LinkButton';
 import SaveButton from './SaveButton';
+import { Box } from '@mui/material';
 
 interface NodeEditorProps {
   highlight: string;
@@ -11,14 +12,14 @@ interface NodeEditorProps {
 
 function NodeEditor({ highlight }: NodeEditorProps) {
   return (
-    <div className="wrapper">
-      <Summary className="field" text={ highlight } />
+    <div className="wrapper" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
+      <Summary className="field" text={highlight} />
       <References className="field" />
       <Notes className="field" />
-      <div className="button-container">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2 }}>
         <LinkButton className="button" />
         <SaveButton className="button" />
-      </div>
+      </Box>
     </div>
   )
 }

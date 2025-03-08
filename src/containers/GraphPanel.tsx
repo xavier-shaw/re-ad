@@ -23,6 +23,7 @@ import OverviewNode from '../components/graph-components/OverviewNode';
 import TemporalEdge from '../components/graph-components/TemporalEdge';
 import RelationEdge from '../components/graph-components/RelationEdge';
 import { PaperContext } from '../contexts/PaperContext';
+import NodeEditor from '../components/node-components/NodeEditor';
 
 
 const nodeTypes = {
@@ -78,7 +79,7 @@ export default function GraphPanel() {
     };
 
     return (
-        <Box style={{ width: '100%', height: '100%' }}>
+        <Box style={{ width: '100%', height: '100%', position: 'relative' }}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -100,6 +101,19 @@ export default function GraphPanel() {
                     <Button size="small" onClick={openOverview}>{isOverview ? 'Overview' : 'Highlight'}</Button>
                 </Panel>
             </ReactFlow>
+
+            <Box style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                height: '30%',
+                backgroundColor: 'white',
+                borderTop: '1px solid #ccc',
+                zIndex: 5
+            }}>
+                {selectedHighlightId && <NodeEditor highlight={selectedHighlightId} />}
+            </Box>
         </Box>
     );
 }
