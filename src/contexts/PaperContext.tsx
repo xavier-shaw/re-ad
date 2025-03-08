@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { Content, IHighlight, NewHighlight, ScaledPosition } from "react-pdf-highlighter";
-import { type Node, type Edge, useNodesState, useEdgesState, type OnNodesChange, type OnEdgesChange, addEdge, Connection } from "@xyflow/react";
+import { type Node, type Edge, useNodesState, useEdgesState, type OnNodesChange, type OnEdgesChange, addEdge, Connection, MarkerType } from "@xyflow/react";
 
 type PaperContextData = {
     highlights: Array<IHighlight>
@@ -15,6 +15,9 @@ type PaperContextData = {
     setEdges: (edges: Array<Edge>) => void
     onEdgesChange: OnEdgesChange
     onConnect: (connection: Connection) => void
+    // Shared
+    selectedHighlightId: string | null
+    setSelectedHighlightId: (highlightId: string | null) => void
 }
 
 export const PaperContext = createContext<PaperContextData | null>(null);
@@ -23,6 +26,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     const [highlights, setHighlights] = useState<Array<IHighlight>>([]);
     const [readId, setReadId] = useState(0);
     const [temporalSeq, setTemporalSeq] = useState(0);
+
+    // Shared
+    const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
 
     // Graph
     const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
@@ -59,6 +65,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
                 id: `${readId}-${temporalSeq}`,
                 type: 'highlight',
                 data: {
+                    id: `${readId}-${temporalSeq}`,
                     label: highlight.content.text,
                     content: highlight.content.text,
                 },
@@ -74,10 +81,11 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
             setEdges((prevEdges: Array<Edge>) => [
                 ...prevEdges,
                 {
-                    id: `temporal-${readId}-${temporalSeq}`,
-                    type: 'temporal',
+                    id: `${readId}-${temporalSeq}`,
                     source: highlights[highlights.length - 1]?.id,
                     target: `${readId}-${temporalSeq}`,
+                    type: 'temporal',
+                    markerEnd: { type: MarkerType.Arrow },
                 },
             ]);
         }
@@ -126,7 +134,10 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
             edges,
             setEdges,
             onEdgesChange,
-            onConnect
+            onConnect,
+            // Shared
+            selectedHighlightId,
+            setSelectedHighlightId,
         }}>
             {children}
         </PaperContext.Provider>

@@ -22,7 +22,7 @@ export default function TemporalEdge({
 
     return (
         <>
-            <BaseEdge path={edgePath} markerEnd={markerEnd} style={{ stroke: 'blue', strokeWidth: 2, strokeDasharray: '5,5' }}/>
+            <BaseEdge path={edgePath} markerEnd={markerEnd} style={{ stroke: 'black', strokeWidth: 1, strokeDasharray: '5,5' }}/>
             <EdgeLabelRenderer>
                 <div
                     className="nodrag nopan"

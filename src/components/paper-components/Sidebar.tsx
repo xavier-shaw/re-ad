@@ -1,5 +1,5 @@
 import type { IHighlight } from "react-pdf-highlighter";
-import "./Sidebar.css";
+import "../../styles/Sidebar.css";
 
 interface Props {
   highlights: Array<IHighlight>;
