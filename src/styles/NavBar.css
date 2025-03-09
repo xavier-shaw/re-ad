@@ -1,0 +1,17 @@
+.NavBar {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  color: black;
+  padding: 10px;
+}
+
+.NavBar .highlights {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.NavBar .highlights div {
+  margin-right: 8px;
+}
