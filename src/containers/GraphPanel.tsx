@@ -57,14 +57,16 @@ export default function GraphPanel() {
     };
 
     const onNodeClick: NodeMouseHandler = (event, node) => {
-        setSelectedHighlightId(node.id);
-
-        if (selectedHighlightId !== null) {
-            const currentHighlightNode = document.getElementById(`node-${selectedHighlightId}`);
-            if (currentHighlightNode) {
-                currentHighlightNode.style.border = 'none';
-            }
+        if (selectedHighlightId === node.id) {
+            setSelectedHighlightId(null);
+        }
+        else {
             setSelectedHighlightId(node.id);
+        }
+
+        const currentHighlightNode = document.getElementById(`node-${selectedHighlightId}`);
+        if (currentHighlightNode) {
+            currentHighlightNode.style.border = 'none';
         }
     };
 
@@ -102,18 +104,20 @@ export default function GraphPanel() {
                 </Panel>
             </ReactFlow>
 
-            <Box style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                width: '100%',
-                height: '30%',
-                backgroundColor: 'white',
-                borderTop: '1px solid #ccc',
-                zIndex: 5
-            }}>
-                {selectedHighlightId && <NodeEditor highlight={selectedHighlightId} />}
-            </Box>
+            {selectedHighlightId && (
+                <Box style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '30%',
+                    backgroundColor: 'white',
+                    borderTop: '1px solid #ccc',
+                    zIndex: 5
+                }}>
+                    <NodeEditor highlight={selectedHighlightId} />
+                </Box>
+            )}
         </Box>
     );
 }
