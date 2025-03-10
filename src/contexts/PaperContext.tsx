@@ -83,8 +83,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         type: "highlight",
         data: {
           id: `${readId}-${temporalSeq}`,
-          label: highlight.content.text,
-          content: highlight.content.text,
+          label:  highlight.content.text?.trim() ? highlight.content.text : highlight.content.image,
+          content: highlight.content.text, // for the node notes?
+          isImage: highlight.content.text?.trim() ? false : true,
         },
         position: {
           x: isFirstHighlight ? readId * NODE_OFFSET_X : nodes[nodes.length - 1].position.x,
