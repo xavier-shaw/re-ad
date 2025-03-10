@@ -1,10 +1,9 @@
 import "./App.css";
-import "./../node_modules/react-pdf-highlighter/dist/style.css";
 import GraphPanel from "./containers/GraphPanel";
 import PaperPanel from "./containers/PaperPanel";
 import { Box } from "@mui/material";
 import { PaperContextProvider } from "./contexts/PaperContext";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/paper-components/NavBar";
 
 function App() {
   return (

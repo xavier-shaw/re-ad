@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import { Content, IHighlight, NewHighlight, ScaledPosition } from "react-pdf-highlighter";
+import { Content, GhostHighlight, ScaledPosition } from "react-pdf-highlighter-extended";
 import {
   type Node,
   type Edge,
@@ -11,18 +11,11 @@ import {
   Connection,
   MarkerType,
 } from "@xyflow/react";
-
-export interface ColoredHighlight extends NewHighlight {
-  color: string;
-}
-
-export interface ColoredIHighlight extends IHighlight {
-  color?: string;
-}
+import { CommentedHighlight } from "../types";
 
 type PaperContextData = {
-  highlights: Array<ColoredIHighlight>;
-  addHighlight: (highlight: ColoredHighlight) => void;
+  highlights: Array<CommentedHighlight>;
+  addHighlight: (highlight: GhostHighlight) => void;
   updateHighlight: (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => void;
   resetHighlights: () => void;
   // Graph
@@ -43,8 +36,10 @@ type PaperContextData = {
 export const PaperContext = createContext<PaperContextData | null>(null);
 
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [highlights, setHighlights] = useState<Array<ColoredIHighlight>>([]);
+  // Paper
+  const [paperUrl, setPaperUrl] = useState<string | null>(null);
   const [readId, setReadId] = useState(0);
+  const [highlights, setHighlights] = useState<Array<CommentedHighlight>>([]);
   const [temporalSeq, setTemporalSeq] = useState(0);
 
   // Shared
@@ -68,9 +63,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setTemporalSeq(highlights.filter((h) => h.id.startsWith(readId.toString())).length);
   }, [readId]);
 
-  const addHighlight = (highlight: ColoredHighlight) => {
+  const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight);
-    setHighlights((prevHighlights: Array<ColoredIHighlight>) => [
+    setHighlights((prevHighlights: Array<CommentedHighlight>) => [
       ...prevHighlights,
       {
         ...highlight,
@@ -115,7 +110,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const updateHighlight = (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => {
     console.log("Update highlight", highlightId, position, content);
-    setHighlights((prevHighlights: Array<ColoredIHighlight>) =>
+    setHighlights((prevHighlights: Array<CommentedHighlight>) =>
       prevHighlights.map((h) => {
         const { id, position: originalPosition, content: originalContent, ...rest } = h;
         return id === highlightId

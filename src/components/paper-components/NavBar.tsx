@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import "../styles/NavBar.css";
-import { PaperContext } from "../contexts/PaperContext";
+import "../../styles/NavBar.css";
+import { PaperContext } from "../../contexts/PaperContext";
 
 interface CheckboxItem {
   id: number;

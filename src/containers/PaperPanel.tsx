@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { Box } from "@mui/material";
 import "../styles/PaperPanel.css";
-import { AreaHighlight, Highlight, PdfHighlighter, PdfLoader, Popup, Tip } from "react-pdf-highlighter";
-import type { IHighlight } from "react-pdf-highlighter";
+import {
+  GhostHighlight,
+  Highlight,
+  PdfHighlighter,
+  PdfHighlighterUtils,
+  PdfLoader,
+  Tip,
+  ViewportHighlight,
+} from "react-pdf-highlighter-extended";
 
-import { Sidebar } from "../components/paper-components/Sidebar";
-import { Spinner } from "../components/paper-components/Spinner";
+import HighlightContainer, { CommentedHighlight } from "../components/paper-components/HighlightContainer";
+import Sidebar from "../components/paper-components/Sidebar";
 import { PaperContext } from "../contexts/PaperContext";
+import CommentForm from "../components/paper-components/CommentForm";
+import ExpandableTip from "../components/paper-components/ExpandableTip";
 
 function PaperPanel() {
   const paperContext = useContext(PaperContext);
@@ -29,13 +38,6 @@ function PaperPanel() {
     document.location.hash = "";
   };
 
-  const HighlightPopup = ({ comment }: { comment: { text: string; emoji: string } }) =>
-    comment.text ? (
-      <div className="Highlight__popup">
-        {comment.emoji} {comment.text}
-      </div>
-    ) : null;
-
   const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -44,29 +46,29 @@ function PaperPanel() {
 
   const [url, setUrl] = useState(initialUrl);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const [highlightPen, setHighlightPen] = useState<boolean>(false);
 
-    if (file && file.type === "application/pdf") {
-      const url = URL.createObjectURL(file);
-      setPdfUrl(url);
-      setUrl(url);
-      resetHighlights();
-    } else {
-      alert("Please upload a valid PDF file.");
+  // Refs for PdfHighlighter utilities
+  const highlighterUtilsRef = useRef<PdfHighlighterUtils>(null);
+
+
+  // Scroll to highlight based on hash in the URL
+  const scrollToHighlightFromHash = () => {
+    const highlight = getHighlightById(parseIdFromHash());
+
+    if (highlight && highlighterUtilsRef.current) {
+      highlighterUtilsRef.current.scrollToHighlight(highlight);
     }
   };
 
-  const scrollViewerTo = useRef((highlight: IHighlight) => {});
+  // Hash listeners for autoscrolling to highlights
+  useEffect(() => {
+    window.addEventListener("hashchange", scrollToHighlightFromHash);
 
-  const scrollToHighlight = useCallback(() => {
-    if (selectedHighlightId) {
-      const highlight = getHighlightById(selectedHighlightId);
-      if (highlight) {
-        scrollViewerTo.current(highlight);
-      }
-    }
-  }, [selectedHighlightId]);
+    return () => {
+      window.removeEventListener("hashchange", scrollToHighlightFromHash);
+    };
+  }, [scrollToHighlightFromHash]);
 
   // useEffect(() => {
   //     window.addEventListener("hashchange", scrollToHighlight, false);
@@ -87,6 +89,41 @@ function PaperPanel() {
     console.log("selectedHighlightId", selectedHighlightId);
   }, [selectedHighlightId]);
 
+
+  // const editHighlight = (
+  //   idToUpdate: string,
+  //   edit: Partial<CommentedHighlight>,
+  // ) => {
+  //   console.log(`Editing highlight ${idToUpdate} with `, edit);
+  //   // setHighlights(
+  //   //   highlights.map((highlight) =>
+  //   //     highlight.id === idToUpdate ? { ...highlight, ...edit } : highlight,
+  //   //   ),
+  //   // );
+  // };
+
+  // Open comment tip and update highlight with new user input
+  // const editComment = (highlight: ViewportHighlight<CommentedHighlight>) => {
+  //   if (!highlighterUtilsRef.current) return;
+
+  //   const editCommentTip: Tip = {
+  //     position: highlight.position,
+  //     content: (
+  //       <CommentForm
+  //         placeHolder={highlight.comment}
+  //         onSubmit={(input) => {
+  //           editHighlight(highlight.id, { comment: input });
+  //           highlighterUtilsRef.current!.setTip(null);
+  //           highlighterUtilsRef.current!.toggleEditInProgress(false);
+  //         }}
+  //       ></CommentForm>
+  //     ),
+  //   };
+
+  //   highlighterUtilsRef.current.setTip(editCommentTip);
+  //   highlighterUtilsRef.current.toggleEditInProgress(true);
+  // };
+
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
       {/* <div>
@@ -97,7 +134,7 @@ function PaperPanel() {
                     className="mb-4"
                 />
             </div> */}
-      <Sidebar highlights={highlights} resetHighlights={resetHighlights} />
+      <Sidebar highlights={highlights} resetHighlights={resetHighlights} toggleDocument={() => {}} />
       <div
         style={{
           height: "100%",
@@ -106,58 +143,26 @@ function PaperPanel() {
         }}
         className="help"
       >
-        <PdfLoader url={url} beforeLoad={<Spinner />}>
+        <PdfLoader document={url}>
           {(pdfDocument) => (
             <PdfHighlighter
-              pdfDocument={pdfDocument}
               enableAreaSelection={(event) => event.altKey}
-              onScrollChange={resetHash}
-              scrollRef={(scrollTo) => {
-                scrollViewerTo.current = scrollTo;
-                scrollToHighlight();
+              pdfDocument={pdfDocument}
+              onScrollAway={resetHash}
+              utilsRef={(_pdfHighlighterUtils) => {
+                highlighterUtilsRef.current = _pdfHighlighterUtils;
               }}
-              onSelectionFinished={(position, content, hideTipAndSelection, transformSelection) => (
-                <Tip
-                  onOpen={transformSelection}
-                  onConfirm={(comment) => {
-                    addHighlight({ content, position, comment, color: currentColor ? currentColor : "yellow" });
-                    hideTipAndSelection();
-                  }}
-                />
-              )}
-              highlightTransform={(highlight, index, setTip, hideTip, viewportToScaled, screenshot, isScrolledTo) => {
-                const isTextHighlight = !highlight.content?.image;
-
-                console.log("highlight");
-                const component = isTextHighlight ? (
-                  <Highlight isScrolledTo={isScrolledTo} position={highlight.position} comment={highlight.comment} />
-                ) : (
-                  <AreaHighlight
-                    isScrolledTo={isScrolledTo}
-                    highlight={highlight}
-                    onChange={(boundingRect) => {
-                      updateHighlight(
-                        highlight.id,
-                        { boundingRect: viewportToScaled(boundingRect) },
-                        { image: screenshot(boundingRect) }
-                      );
-                    }}
-                  />
-                );
-
-                return (
-                  <Popup
-                    popupContent={<HighlightPopup {...highlight} />}
-                    onMouseOver={(popupContent) => setTip(highlight, (highlight) => popupContent)}
-                    onMouseOut={hideTip}
-                    key={index}
-                  >
-                    <div className={`highlight ${highlight.color}`}>{component}</div>
-                  </Popup>
-                );
-              }}
+              // pdfScaleValue={pdfScaleValue}
+              textSelectionColor={highlightPen ? "rgba(255, 226, 143, 1)" : undefined}
+              onSelection={highlightPen ? (selection) => addHighlight(selection.makeGhostHighlight()) : undefined}
+              selectionTip={highlightPen ? undefined : <ExpandableTip addHighlight={addHighlight} />}
               highlights={highlights}
-            />
+            >
+              <HighlightContainer
+                // editHighlight={editHighlight}
+                // onContextMenu={handleContextMenu}
+              />
+            </PdfHighlighter>
           )}
         </PdfLoader>
       </div>
