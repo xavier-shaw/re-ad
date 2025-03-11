@@ -11,7 +11,7 @@ import {
   Connection,
   MarkerType,
 } from "@xyflow/react";
-import { CommentedHighlight } from "../types";
+import { CommentedHighlight } from "../components/paper-components/HighlightContainer";
 
 type PaperContextData = {
   highlights: Array<CommentedHighlight>;
@@ -27,22 +27,41 @@ type PaperContextData = {
   onEdgesChange: OnEdgesChange;
   onConnect: (connection: Connection) => void;
   // Shared
+  readRecords: Record<string, ReadRecord>;
+  currentReadId: string;
+  setCurrentReadId: (readId: string) => void;
   selectedHighlightId: string | null;
   setSelectedHighlightId: (highlightId: string | null) => void;
-  currentColor: string | null;
-  setCurrentColor: (color: string) => void;
 };
 
 export const PaperContext = createContext<PaperContextData | null>(null);
 
+type ReadRecord = {
+  id: string;
+  title: string;
+  color: string;
+};
+
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
-  const [readId, setReadId] = useState(0);
   const [highlights, setHighlights] = useState<Array<CommentedHighlight>>([]);
   const [temporalSeq, setTemporalSeq] = useState(0);
 
   // Shared
+  const [readRecords, setReadRecords] = useState<Record<string, ReadRecord>>({
+    "0": {
+      id: "0",
+      title: "Read 0",
+      color: "rgba(238, 205, 114, 0.5)",
+    },
+    "1": {
+      id: "1",
+      title: "Read 1",
+      color: "rgba(50, 157, 48, 0.5)",
+    },
+  });
+  const [currentReadId, setCurrentReadId] = useState("0");
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
 
   // Graph
@@ -51,8 +70,6 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   const NODE_OFFSET_X = 150;
   const NODE_OFFSET_Y = 150;
 
-  const [currentColor, setCurrentColor] = useState<string | null>(null);
-
   const onConnect = useCallback((connection: Connection) => {
     console.log("Connect", connection);
     const edge = { ...connection, type: "relation" };
@@ -60,16 +77,17 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   }, []);
 
   useEffect(() => {
-    setTemporalSeq(highlights.filter((h) => h.id.startsWith(readId.toString())).length);
-  }, [readId]);
+    setTemporalSeq(highlights.filter((h) => h.id.startsWith(currentReadId.toString())).length);
+  }, [currentReadId]);
 
   const addHighlight = (highlight: GhostHighlight) => {
-    console.log("Add highlight", highlight);
+    console.log("Add highlight", highlight, highlights);
     setHighlights((prevHighlights: Array<CommentedHighlight>) => [
       ...prevHighlights,
       {
         ...highlight,
-        id: `${readId}-${temporalSeq}`,
+        id: `${currentReadId}-${temporalSeq}`,
+        readRecordId: currentReadId,
       },
     ]);
     setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
@@ -79,15 +97,16 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setNodes((prevNodes: Array<Node>) => [
       ...prevNodes,
       {
-        id: `${readId}-${temporalSeq}`,
+        id: `${currentReadId}-${temporalSeq}`,
         type: "highlight",
         data: {
-          id: `${readId}-${temporalSeq}`,
+          id: `${currentReadId}-${temporalSeq}`,
+          readRecordId: currentReadId,
           label: highlight.content.text,
-          content: highlight.content.text,
+          content: highlight.content.text
         },
         position: {
-          x: isFirstHighlight ? readId * NODE_OFFSET_X : nodes[nodes.length - 1].position.x,
+          x: isFirstHighlight ? Object.keys(readRecords).findIndex(id => id === currentReadId) * NODE_OFFSET_X : nodes[nodes.length - 1].position.x,
           y: isFirstHighlight ? NODE_OFFSET_Y : nodes[nodes.length - 1].position.y + NODE_OFFSET_Y,
         },
       },
@@ -98,9 +117,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       setEdges((prevEdges: Array<Edge>) => [
         ...prevEdges,
         {
-          id: `${readId}-${temporalSeq}`,
+          id: `${currentReadId}-${temporalSeq}`,
           source: highlights[highlights.length - 1]?.id,
-          target: `${readId}-${temporalSeq}`,
+          target: `${currentReadId}-${temporalSeq}`,
           type: "temporal",
           markerEnd: { type: MarkerType.Arrow },
         },
@@ -145,10 +164,11 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         onEdgesChange,
         onConnect,
         // Shared
+        readRecords,
+        currentReadId,
+        setCurrentReadId,
         selectedHighlightId,
         setSelectedHighlightId,
-        currentColor,
-        setCurrentColor,
       }}
     >
       {children}

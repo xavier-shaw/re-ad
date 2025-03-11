@@ -8,11 +8,11 @@ import {
 import "../../styles/ExpandableTip.css";
 
 interface ExpandableTipProps {
-  addHighlight: (highlight: GhostHighlight, comment: string) => void;
+  addHighlight: (highlight: GhostHighlight) => void;
+  color: string;
 }
 
 const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
-  const [compact, setCompact] = useState(true);
   const selectionRef = useRef<PdfSelection | null>(null);
 
   const {
@@ -20,43 +20,28 @@ const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
     removeGhostHighlight,
     setTip,
     updateTipPosition,
+    getGhostHighlight,
   } = usePdfHighlighterContext();
-
-  useLayoutEffect(() => {
-    updateTipPosition!();
-  }, [compact]);
 
   return (
     <div className="Tip">
-      {compact ? (
         <button
           className="Tip__compact"
           onClick={() => {
-            setCompact(false);
             selectionRef.current = getCurrentSelection();
-            selectionRef.current!.makeGhostHighlight();
-          }}
-        >
-          Add highlight
-        </button>
-      ) : (
-        <CommentForm
-          placeHolder="Your comment..."
-          onSubmit={(input) => {
             addHighlight(
               {
                 content: selectionRef.current!.content,
                 type: selectionRef.current!.type,
                 position: selectionRef.current!.position,
               },
-              input,
             );
-
             removeGhostHighlight();
             setTip(null);
           }}
-        />
-      )}
+        >
+          Add highlight
+        </button>
     </div>
   );
 };

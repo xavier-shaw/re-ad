@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+
 import "../styles/PaperPanel.css";
 import {
   GhostHighlight,
@@ -13,9 +15,10 @@ import {
 
 import HighlightContainer, { CommentedHighlight } from "../components/paper-components/HighlightContainer";
 import Sidebar from "../components/paper-components/Sidebar";
-import { PaperContext } from "../contexts/PaperContext";
+import { PaperContext, PaperContextProvider } from "../contexts/PaperContext";
 import CommentForm from "../components/paper-components/CommentForm";
 import ExpandableTip from "../components/paper-components/ExpandableTip";
+import { ArrowForward } from "@mui/icons-material";
 
 function PaperPanel() {
   const paperContext = useContext(PaperContext);
@@ -29,7 +32,8 @@ function PaperPanel() {
     resetHighlights,
     selectedHighlightId,
     setSelectedHighlightId,
-    currentColor,
+    currentReadId,
+    readRecords,
   } = paperContext;
 
   const parseIdFromHash = () => document.location.hash.slice("#highlight-".length);
@@ -46,11 +50,8 @@ function PaperPanel() {
 
   const [url, setUrl] = useState(initialUrl);
 
-  const [highlightPen, setHighlightPen] = useState<boolean>(false);
-
   // Refs for PdfHighlighter utilities
   const highlighterUtilsRef = useRef<PdfHighlighterUtils>(null);
-
 
   // Scroll to highlight based on hash in the URL
   const scrollToHighlightFromHash = () => {
@@ -102,27 +103,7 @@ function PaperPanel() {
   //   // );
   // };
 
-  // Open comment tip and update highlight with new user input
-  // const editComment = (highlight: ViewportHighlight<CommentedHighlight>) => {
-  //   if (!highlighterUtilsRef.current) return;
-
-  //   const editCommentTip: Tip = {
-  //     position: highlight.position,
-  //     content: (
-  //       <CommentForm
-  //         placeHolder={highlight.comment}
-  //         onSubmit={(input) => {
-  //           editHighlight(highlight.id, { comment: input });
-  //           highlighterUtilsRef.current!.setTip(null);
-  //           highlighterUtilsRef.current!.toggleEditInProgress(false);
-  //         }}
-  //       ></CommentForm>
-  //     ),
-  //   };
-
-  //   highlighterUtilsRef.current.setTip(editCommentTip);
-  //   highlighterUtilsRef.current.toggleEditInProgress(true);
-  // };
+  const [sideBarOpen, setSideBarOpen] = useState(false);
 
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
@@ -134,11 +115,55 @@ function PaperPanel() {
                     className="mb-4"
                 />
             </div> */}
-      <Sidebar highlights={highlights} resetHighlights={resetHighlights} toggleDocument={() => {}} />
+
+      {sideBarOpen && (
+        <Sidebar highlights={highlights} resetHighlights={resetHighlights} />
+      )}
+      {sideBarOpen && (
+        <IconButton
+          sx={{
+            position: 'absolute',
+            left: 'calc(15% - 10px)', // Adjust based on your left panel width
+            top: '50%',
+            transform: 'translateY(-50%)',
+            backgroundColor: 'white',
+            '&:hover': { backgroundColor: '#f0f0f0' },
+            boxShadow: 2,
+            zIndex: 1000,
+            width: '24px',
+            height: '48px',
+            borderRadius: '0 4px 4px 0'
+          }}
+          onClick={() => setSideBarOpen(false)}
+        >
+          <ArrowBack />
+        </IconButton>
+      )}
+      {!sideBarOpen && (
+        <IconButton
+          sx={{
+            position: 'fixed',
+            left: '0',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            backgroundColor: 'white',
+            '&:hover': { backgroundColor: '#f0f0f0' },
+            boxShadow: 2,
+            zIndex: 1000,
+            width: '24px',
+            height: '48px',
+            borderRadius: '0 4px 4px 0'
+          }}
+          onClick={() => setSideBarOpen(true)}
+        >
+          <ArrowForward />
+        </IconButton>
+      )}
+
       <div
         style={{
           height: "100%",
-          width: "75%",
+          width: sideBarOpen ? "calc(75%)" : "100%",
           position: "relative",
         }}
         className="help"
@@ -146,22 +171,18 @@ function PaperPanel() {
         <PdfLoader document={url}>
           {(pdfDocument) => (
             <PdfHighlighter
-              enableAreaSelection={(event) => event.altKey}
               pdfDocument={pdfDocument}
               onScrollAway={resetHash}
               utilsRef={(_pdfHighlighterUtils) => {
                 highlighterUtilsRef.current = _pdfHighlighterUtils;
               }}
               // pdfScaleValue={pdfScaleValue}
-              textSelectionColor={highlightPen ? "rgba(255, 226, 143, 1)" : undefined}
-              onSelection={highlightPen ? (selection) => addHighlight(selection.makeGhostHighlight()) : undefined}
-              selectionTip={highlightPen ? undefined : <ExpandableTip addHighlight={addHighlight} />}
+              // textSelectionColor={undefined}
+              // onSelection={undefined}
+              selectionTip={<ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId].color} />}
               highlights={highlights}
             >
-              <HighlightContainer
-                // editHighlight={editHighlight}
-                // onContextMenu={handleContextMenu}
-              />
+              <HighlightContainer readRecords={readRecords} />
             </PdfHighlighter>
           )}
         </PdfLoader>

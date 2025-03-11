@@ -1,61 +1,72 @@
 import React, { useState, useContext } from "react";
 import "../../styles/NavBar.css";
 import { PaperContext } from "../../contexts/PaperContext";
-
-interface CheckboxItem {
-  id: number;
-  label: string;
-  color: string;
-}
+import { Box, Checkbox, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { FormControlLabel } from "@mui/material";
 
 export default function NavBar() {
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { setCurrentColor } = paperContext;
-
-  const [checkboxes, setCheckboxes] = useState<CheckboxItem[]>([
-    { id: 1, label: "Item 1", color: "red" },
-    { id: 2, label: "Item 2", color: "blue" },
-  ]);
-
-  const addCheckbox = () => {
-    const newId = checkboxes.length + 1;
-    const newCheckbox: CheckboxItem = {
-      id: newId,
-      label: `Item ${newId}`,
-      color: newId % 2 === 0 ? "green" : "orange",
-    };
-    setCheckboxes([...checkboxes, newCheckbox]);
-  };
-
-  const handleCheckboxChange = (color: string) => {
-    setCurrentColor(color);
-  };
+  const { readRecords, currentReadId, setCurrentReadId } = paperContext;
 
   return (
     <div className="NavBar">
-      <h3>Navbar</h3>
+      <h3>RE:AD</h3>
       <div className="highlights">
-        {checkboxes.map((checkbox) => (
-          <div key={checkbox.id}>
-            <label>
-              <input
-                type="checkbox"
-                onChange={() => handleCheckboxChange(checkbox.color)}
-                style={{ marginRight: "8px", accentColor: checkbox.color }}
-              />
-              {checkbox.label}
-            </label>
+        {Object.values(readRecords).map((readRecord) => (
+          <div key={readRecord.id}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={() => {}}
+                  sx={{
+                    color: readRecord.color,
+                    '&.Mui-checked': {
+                      color: readRecord.color,
+                    },
+                  }}
+                />
+              }
+              label={readRecord.title}
+            />
           </div>
         ))}
         <div>
-          <button onClick={addCheckbox} style={{ border: "none", cursor: "pointer" }}>
+          <button onClick={() => {}} style={{ border: "none", cursor: "pointer" }}>
             +
           </button>
         </div>
       </div>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+        <h4>Active Read</h4>
+        <div>
+          <FormControl size="small" fullWidth>
+            <Select
+              value={currentReadId}
+              onChange={(e) => setCurrentReadId(e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: readRecords[currentReadId].color,
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: readRecords[currentReadId].color,
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: readRecords[currentReadId].color,
+                },
+              }}
+            >
+              {Object.values(readRecords).map((record) => (
+                <MenuItem key={record.id} value={record.id}>
+                  {record.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+      </Box>
     </div>
   );
 }
