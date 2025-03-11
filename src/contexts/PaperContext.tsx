@@ -92,6 +92,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
     // add a node to the graph
     const isFirstHighlight = temporalSeq === 0;
+    const text = highlight.content.text ?? "";
+    const words = text.split(/\s+/);
+    const truncatedText = words.length > 30 ? words.slice(0, 30).join(" ") + "..." : text;
     setNodes((prevNodes: Array<Node>) => [
       ...prevNodes,
       {
@@ -100,7 +103,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         data: {
           id: `${currentReadId}-${temporalSeq}`,
           readRecordId: currentReadId,
-          label: highlight.content.text,
+          label: truncatedText,
           content: highlight.content.text,
         },
         position: {
