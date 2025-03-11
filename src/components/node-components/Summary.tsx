@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface SummaryProps {
-  className: string,
+  className: string;
   text: string;
 }
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
-function Summary ({ className, text }: SummaryProps) {
+function Summary({ className, text }: SummaryProps) {
   const [summary, setSummary] = useState<string>("");
 
   // useEffect(() => {
@@ -30,12 +30,14 @@ function Summary ({ className, text }: SummaryProps) {
   // }, [text]);
 
   return (
-    <div className={ className }>
-      <p>Definition/summary</p>
-      <p style={{ fontStyle: "italic" }}>{text}</p>
-      <p>(From Gemini) {summary || "Generating summary..."}</p>
+    <div className={`summary-container ${className}`}>
+      <h3 className="summary-title">Definition / Summary</h3>
+      <p className="summary-text">{text}</p>
+      <p className="summary-generated">
+        <span className="summary-label">(From Gemini)</span> {summary || "Generating summary..."}
+      </p>
     </div>
   );
-};
+}
 
 export default Summary;

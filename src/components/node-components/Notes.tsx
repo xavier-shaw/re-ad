@@ -1,21 +1,24 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 interface NotesProps {
   className: string;
 }
 
 function Notes({ className }: NotesProps) {
-  const [notes, setNotes] = useState("")
-  
+  const [notes, setNotes] = useState("");
+
   return (
-    <div className={ className }>
+    <div className={`notes-container ${className}`}>
+      <h3 className="notes-title">Your Notes</h3>
       <input
         type="text"
+        value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        placeholder="Notes"
+        placeholder="Write your notes here..."
+        className="notes-input"
       />
     </div>
-  )
+  );
 }
 
-export default Notes
+export default Notes;

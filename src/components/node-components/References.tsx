@@ -4,11 +4,11 @@ interface ReferencesProps {
 
 function References({ className }: ReferencesProps) {
   return (
-    <div className={ className }>
-      <p>References in paper</p>
-      <p>...</p>
+    <div className={`references-container ${className}`}>
+      <h3 className="references-title">References in Paper</h3>
+      <p className="references-placeholder">No references found.</p>
     </div>
-  )
+  );
 }
 
-export default References
+export default References;
