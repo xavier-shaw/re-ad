@@ -126,7 +126,7 @@ function PaperPanel() {
           {/* Button to Trigger File Upload */}
           <label htmlFor="pdf-upload">
             <Button
-              variant="contained"
+              variant="outlined"
               component="span"
               startIcon={<UploadFile />}
             >
