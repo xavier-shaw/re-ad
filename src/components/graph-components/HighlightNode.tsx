@@ -27,11 +27,10 @@ export default function HighlightNode({ data }: NodeProps<Node>) {
       sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}
     >
       <Handle type="target" position={Position.Top} />
-      {type === "area" ? (
-        <img src={label} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
-      ) : (
-        <Typography variant="h6">{label}</Typography>
-      )}
+      <Typography variant="h6">{label}</Typography>
+      {type === "area" &&
+        <img src={content} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
+      }
       <Handle type="source" position={Position.Bottom} />
     </Box>
   );

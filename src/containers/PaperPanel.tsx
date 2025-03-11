@@ -28,7 +28,6 @@ function PaperPanel() {
   const {
     highlights,
     addHighlight,
-    updateHighlight,
     resetHighlights,
     selectedHighlightId,
     setSelectedHighlightId,

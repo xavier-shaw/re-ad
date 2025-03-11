@@ -5,7 +5,7 @@ import { PaperContext } from "../../contexts/PaperContext";
 import { useContext } from "react";
 
 export default function OverviewNode({ data }: NodeProps<Node>) {
-    const { id, readRecordId, label, content, type } = data as { id: string, readRecordId: string, label: string, content: string, type: string };
+    const { id, readRecordId, label, content, type, notes } = data as { id: string, readRecordId: string, label: string, content: string, type: string, notes: string };
     const paperContext = useContext(PaperContext);
     if (!paperContext) {
         throw new Error("PaperContext not found");
@@ -17,15 +17,14 @@ export default function OverviewNode({ data }: NodeProps<Node>) {
     return (
         <Box className="overview-node" id={`node-${id}`} sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}>
             <Handle type="target" position={Position.Top} />
-            {type === "area" ? (
+            <Typography variant="h6">{label}</Typography>
+            {type === "area" &&
                 <>
-                    <img src={label} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
+                    <img src={content} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
                     <br />
                 </>
-            ) : (
-                <Typography variant="h6">{label}</Typography>
-            )}
-            <Typography variant="caption">{content}</Typography>
+            }
+            <Typography variant="caption">{notes}</Typography>
             <Handle type="source" position={Position.Bottom} />
         </Box>
     );

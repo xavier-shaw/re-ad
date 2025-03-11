@@ -12,11 +12,12 @@ import {
   MarkerType,
 } from "@xyflow/react";
 import { ReadHighlight } from "../components/paper-components/HighlightContainer";
+import { NodeData } from "../components/node-components/NodeEditor";
 
 type PaperContextData = {
   highlights: Array<ReadHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
-  updateHighlight: (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => void;
+  updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
   deleteHighlight: (highlightId: string) => void;
   resetHighlights: () => void;
   // Graph
@@ -70,7 +71,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const onConnect = useCallback((connection: Connection) => {
     console.log("Connect", connection);
-    const edge = { ...connection, type: "relation" };
+    const edge = { ...connection, type: "relation", markerEnd: { type: MarkerType.Arrow } };
     setEdges((prevEdges) => addEdge(edge, prevEdges));
   }, []);
 
@@ -82,7 +83,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     if (highlight.type === "text") {
       const text = highlight.content.text?.trim() ?? "";
       const words = text.split(/\s+/);
-      const truncatedText = words.length > 20 ? words.slice(0, 20).join(" ") + "..." : text;
+      const truncatedText = words.length > 10 ? words.slice(0, 10).join(" ") + "..." : text;
       return {
         type: highlight.type,
         label: truncatedText,
@@ -92,8 +93,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     else if (highlight.type === "area") {
       return {
         type: highlight.type,
-        label: highlight.content.image,
-        content: "Image",
+        label: "Image",
+        content: highlight.content.image,
       };
     }
   }
@@ -122,7 +123,11 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         data: {
           id: id,
           readRecordId: currentReadId,
-          ...processHighlightText(highlight)
+          ...processHighlightText(highlight),
+          // user notes
+          summary: "",
+          references: [],
+          notes: "Write your notes here...",
         },
         position: {
           x: isFirstHighlight
@@ -149,24 +154,21 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       ]);
     }
 
+    // set current node to be selected and open the node editor
     setSelectedHighlightId(id);
   };
 
-  const updateHighlight = (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => {
-    console.log("Update highlight", highlightId, position, content);
-    setHighlights((prevHighlights: Array<ReadHighlight>) =>
-      prevHighlights.map((h) => {
-        const { id, position: originalPosition, content: originalContent, ...rest } = h;
-        return id === highlightId
-          ? {
-              id,
-              position: { ...originalPosition, ...position },
-              content: { ...originalContent, ...content },
-              ...rest,
-            }
-          : h;
-      })
-    );
+  const updateNodeData = (nodeId: string, data: Partial<NodeData>) => {
+    let currentNodes = [...nodes];
+    currentNodes = currentNodes.map((node) => {
+      if (node.id === nodeId) {
+        return { ...node, data: { ...node.data, ...data } };
+      }
+      return node;
+    });
+
+    console.log("Updated nodes", currentNodes);
+    setNodes(currentNodes);
   };
 
   const deleteHighlight = (highlightId: string) => {
@@ -210,7 +212,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       value={{
         highlights,
         addHighlight,
-        updateHighlight,
+        updateNodeData,
         deleteHighlight,
         resetHighlights,
         // Graph

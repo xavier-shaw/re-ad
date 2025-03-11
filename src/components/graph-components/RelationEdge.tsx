@@ -21,7 +21,7 @@ export default function RelationEdge({
 
     return (
         <>
-            <BaseEdge path={edgePath} style={{ stroke: 'red', strokeWidth: 1 }}/>
+            <BaseEdge path={edgePath} style={{ stroke: 'black', strokeWidth: 2 }}/>
             <EdgeLabelRenderer>
                 <div
                     className="nodrag nopan"
