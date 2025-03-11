@@ -41,8 +41,6 @@ function HighlightContainer({
 }: HighlightContainerProps) {
     const {
         highlight,
-        viewportToScaled,
-        screenshot,
         isScrolledTo,
         highlightBindings,
     } = useHighlightContainerContext<CommentedHighlight>();
@@ -66,22 +64,10 @@ function HighlightContainer({
                 bounds={highlightBindings.textLayer}
                 style={{
                     background: color,
+                    pointerEvents: "none",
                 }}
             />
     );
-
-    // const highlightTip: Tip = {
-    //     position: highlight.position,
-    //     content: <HighlightPopup highlight={highlight} />,
-    // };
-
-    // return (
-    //     <MonitoredHighlightContainer
-    //         highlightTip={highlightTip}
-    //         key={highlight.id}
-    //         children={component}
-    //     />
-    // );
 };
 
 export default HighlightContainer;

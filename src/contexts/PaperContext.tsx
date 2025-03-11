@@ -78,6 +78,26 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setTemporalSeq(highlights.filter((h) => h.id.startsWith(currentReadId.toString())).length);
   }, [currentReadId]);
 
+  const processHighlightText = (highlight: GhostHighlight) => {
+    if (highlight.type === "text") {
+      const text = highlight.content.text?.trim() ?? "";
+      const words = text.split(/\s+/);
+      const truncatedText = words.length > 20 ? words.slice(0, 20).join(" ") + "..." : text;
+      return {
+        type: highlight.type,
+        label: truncatedText,
+        content: highlight.content.text,
+      };
+    }
+    else if (highlight.type === "area") {
+      return {
+        type: highlight.type,
+        label: highlight.content.image,
+        content: "Image",
+      };
+    }
+  }
+
   const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight, highlights);
     setHighlights((prevHighlights: Array<CommentedHighlight>) => [
@@ -92,9 +112,6 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
     // add a node to the graph
     const isFirstHighlight = temporalSeq === 0;
-    const text = highlight.content.text ?? "";
-    const words = text.split(/\s+/);
-    const truncatedText = words.length > 30 ? words.slice(0, 30).join(" ") + "..." : text;
     setNodes((prevNodes: Array<Node>) => [
       ...prevNodes,
       {
@@ -103,8 +120,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         data: {
           id: `${currentReadId}-${temporalSeq}`,
           readRecordId: currentReadId,
-          label: truncatedText,
-          content: highlight.content.text,
+          ...processHighlightText(highlight)
         },
         position: {
           x: isFirstHighlight
@@ -114,6 +130,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         },
       },
     ]);
+
+    console.log("Nodes", nodes);
 
     // add an edge to the graph
     if (!isFirstHighlight) {
