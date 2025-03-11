@@ -1,0 +1,13 @@
+.panel {
+    height: 100%;
+    border-right: 1px solid #000;
+  }
+  
+  .paper-panel {
+    width: 60%;
+  }
+  
+  .graph-panel {
+    width: 40%;
+  }
+  
