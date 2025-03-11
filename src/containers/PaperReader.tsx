@@ -43,13 +43,33 @@ export const PaperReader = () => {
 
       <Dialog open={isAddingNewRead}>
         <DialogTitle>Create New Read</DialogTitle>
-        <DialogContent>
-          <TextField label="Title" value={title} onChange={(event) => setTitle(event.target.value)} />
-          <input type="color" value={color} onChange={(event) => setColor(event.target.value)} />
+        <DialogContent style={{ paddingTop: 20, display: "flex", alignItems: "center" }}>
+          <TextField
+            label="Title"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            style={{ padding: 4 }}
+          />
+          <input
+            style={{
+              padding: 4,
+              borderColor: "rgba(0, 0, 0, 0.23)",
+              background: "none",
+              cursor: "pointer",
+              borderRadius: 4,
+            }}
+            type="color"
+            value={color}
+            onChange={(event) => setColor(event.target.value)}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button onClick={handleCreateRead}>Create</Button>
+          <Button className="mui-button" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button className="mui-button" onClick={handleCreateRead}>
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
