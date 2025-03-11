@@ -3,9 +3,14 @@
   width: 100%;
   align-items: center;
   color: black;
-  padding: 5px;
+  padding: calc(5px + 2rem);
   border-bottom: 1px solid #e0e0e0;
   justify-content: space-between;
+  letter-spacing: 0.69px;
+}
+
+.NavBar .read {
+  text-transform: none;
 }
 
 .NavBar .highlights {
@@ -15,4 +20,17 @@
 
 .NavBar .highlights div {
   margin-right: 8px;
+}
+
+.NavBar .logo-text {
+  display: flex;
+  align-items: center;
+}
+
+.NavBar .logo-text h3 {
+  letter-spacing: 7px;
+  font-size: 26px;
+  font-weight: 600;
+  margin-left: 4px;
+  padding-bottom: 1px;
 }

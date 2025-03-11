@@ -8,6 +8,9 @@
   background: #f5f7fa; /* Light, neutral background */
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* General field styling */
@@ -96,6 +99,10 @@
   margin: 15px 0;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease-in-out;
+}
+
+.summary-container p {
+  text-transform: none !important;
 }
 
 .summary-container:hover {

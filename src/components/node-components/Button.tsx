@@ -6,9 +6,9 @@ interface ButtonProps {
 
 function Button({ className, text, onClick }: ButtonProps) {
   return (
-    <div className={className}>
-      <button onClick={onClick}>{text}</button>
-    </div>
+    <button className={className} style={{ color: "white" }} onClick={onClick}>
+      {text}
+    </button>
   );
 }
 

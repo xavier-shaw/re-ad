@@ -32,7 +32,7 @@ function Summary({ className, text }: SummaryProps) {
   return (
     <div className={`summary-container ${className}`}>
       <h3 className="summary-title">Definition / Summary</h3>
-      <p className="summary-text">{text}</p>
+      {/* <p className="summary-text">{text}</p> */}
       <p className="summary-generated">
         <span className="summary-label">(From Gemini)</span> {summary || "Generating summary..."}
       </p>
