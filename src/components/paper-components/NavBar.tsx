@@ -10,7 +10,7 @@ export default function NavBar() {
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { readRecords, currentReadId, setCurrentReadId, setIsAddingNewRead } = paperContext;
+  const { readRecords, currentReadId, setCurrentReadId, setIsAddingNewRead, displayedReads, hideRead, showRead } = paperContext;
 
   return (
     <div className="NavBar">
@@ -23,13 +23,21 @@ export default function NavBar() {
             <FormControlLabel
               control={
                 <Checkbox
-                  onChange={() => { }}
+                  onChange={() => {
+                    if (displayedReads.includes(readRecord.id)) {
+                      hideRead(readRecord.id);
+                    } else {
+                      showRead(readRecord.id);
+                    }
+                  }}
                   sx={{
                     color: readRecord.color,
                     '&.Mui-checked': {
                       color: readRecord.color,
                     },
                   }}
+                  checked={displayedReads.includes(readRecord.id)}
+                  disabled={currentReadId === readRecord.id}
                 />
               }
               label={readRecord.title}

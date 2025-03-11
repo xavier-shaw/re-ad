@@ -12,13 +12,14 @@ import {
     useReactFlow,
     ReactFlowProvider
 } from '@xyflow/react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import HighlightNode from '../components/graph-components/HighlightNode';
 import OverviewNode from '../components/graph-components/OverviewNode';
 import TemporalEdge from '../components/graph-components/TemporalEdge';
 import RelationEdge from '../components/graph-components/RelationEdge';
 import { PaperContext } from '../contexts/PaperContext';
 import NodeEditor from '../components/node-components/NodeEditor';
+import { CloseFullscreen, OpenInFull } from '@mui/icons-material';
 
 const nodeTypes = {
     highlight: HighlightNode,
@@ -65,7 +66,7 @@ function Flow(props: any) {
     const { fitView } = useReactFlow();
     useEffect(() => {
         fitView();
-    }, [nodes.length]);
+    }, [nodes]);
 
     return (
         <ReactFlow
@@ -86,7 +87,9 @@ function Flow(props: any) {
             <MiniMap />
 
             <Panel position="top-right">
-                <Button size="small" onClick={openOverview}>{isOverview ? 'Overview' : 'Highlight'}</Button>
+                <IconButton onClick={openOverview}>
+                    {isOverview ? <CloseFullscreen /> : <OpenInFull />}
+                </IconButton>
             </Panel>
         </ReactFlow>
     );

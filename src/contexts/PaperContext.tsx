@@ -14,6 +14,7 @@ import {
 import { CommentedHighlight } from "../components/paper-components/HighlightContainer";
 
 type PaperContextData = {
+  
   highlights: Array<CommentedHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
   updateHighlight: (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => void;
@@ -33,6 +34,9 @@ type PaperContextData = {
   createRead: (title: string, color: string) => void;
   currentReadId: string;
   setCurrentReadId: (readId: string) => void;
+  displayedReads: Array<string>;
+  hideRead: (readId: string) => void;
+  showRead: (readId: string) => void;
   selectedHighlightId: string | null;
   setSelectedHighlightId: (highlightId: string | null) => void;
 };
@@ -56,6 +60,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   const [isAddingNewRead, setIsAddingNewRead] = useState(false);
   const [currentReadId, setCurrentReadId] = useState("0");
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
+  const [displayedReads, setDisplayedReads] = useState<Array<string>>([]);
 
   // Graph
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
@@ -148,7 +153,16 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       [newReadId]: { id: newReadId, title, color },
     }));
     setCurrentReadId(newReadId);
+    showRead(newReadId);
   };
+
+  const hideRead = (readId: string) => {
+    setDisplayedReads((prevDisplayedReads) => prevDisplayedReads.filter((id) => id !== readId));
+  }
+
+  const showRead = (readId: string) => {
+    setDisplayedReads((prevDisplayedReads) => [...prevDisplayedReads, readId]);
+  }
 
   return (
     <PaperContext.Provider
@@ -174,6 +188,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         selectedHighlightId,
         setSelectedHighlightId,
         createRead,
+        displayedReads,
+        hideRead,
+        showRead,
       }}
     >
       {children}

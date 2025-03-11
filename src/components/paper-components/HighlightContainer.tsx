@@ -22,6 +22,7 @@ export interface CommentedHighlight extends Highlight {
 
 interface HighlightContainerProps {
     readRecords: any;
+    displayedReads: Array<string>;
     // editHighlight: (
     //     idToUpdate: string,
     //     edit: Partial<CommentedHighlight>,
@@ -34,6 +35,7 @@ interface HighlightContainerProps {
 
 function HighlightContainer({
     readRecords,
+    displayedReads,
     // editHighlight,
     // onContextMenu,
 }: HighlightContainerProps) {
@@ -45,13 +47,16 @@ function HighlightContainer({
         highlightBindings,
     } = useHighlightContainerContext<CommentedHighlight>();
 
+    // Transparent Colors: #f2f2f2, #e6e6e6, #d9d9d9
+    const color = displayedReads.includes(highlight.readRecordId) ? readRecords[highlight.readRecordId].color : "#e6e6e6";
+
     return (
         highlight.type === "text" ?
             <TextHighlight
                 isScrolledTo={isScrolledTo}
                 highlight={highlight}
                 style={{
-                    background: readRecords[highlight.readRecordId].color,
+                    background: color,
                 }}
             />
             :
@@ -60,7 +65,7 @@ function HighlightContainer({
                 highlight={highlight}
                 bounds={highlightBindings.textLayer}
                 style={{
-                    background: readRecords[highlight.readRecordId].color,
+                    background: color,
                 }}
             />
     );

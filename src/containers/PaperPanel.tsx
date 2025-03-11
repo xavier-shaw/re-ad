@@ -34,6 +34,7 @@ function PaperPanel() {
     setSelectedHighlightId,
     currentReadId,
     readRecords,
+    displayedReads
   } = paperContext;
 
   const parseIdFromHash = () => document.location.hash.slice("#highlight-".length);
@@ -43,8 +44,6 @@ function PaperPanel() {
   };
 
   const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
-
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const searchParams = new URLSearchParams(document.location.search);
   const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 
@@ -183,7 +182,7 @@ function PaperPanel() {
               selectionTip={Object.keys(readRecords).length > 0 ? <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} /> : null}
               highlights={highlights}
             >
-              <HighlightContainer readRecords={readRecords} />
+              <HighlightContainer readRecords={readRecords} displayedReads={displayedReads}/>
             </PdfHighlighter>
           )}
         </PdfLoader>
