@@ -100,6 +100,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight, highlights);
+    const id = `${currentReadId}-${temporalSeq}`;
+    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
+
     setHighlights((prevHighlights: Array<ReadHighlight>) => [
       ...prevHighlights,
       {
