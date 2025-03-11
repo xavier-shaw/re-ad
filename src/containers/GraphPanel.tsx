@@ -57,7 +57,7 @@ function Flow(props: any) {
 
     const currentHighlightNode = document.getElementById(`node-${selectedHighlightId}`);
     if (currentHighlightNode) {
-      currentHighlightNode.style.border = "none";
+      currentHighlightNode.style.outline = "none";
     }
   };
 
@@ -120,7 +120,7 @@ export default function GraphPanel() {
   useEffect(() => {
     const highlightNode = document.getElementById(`node-${selectedHighlightId}`);
     if (highlightNode) {
-      highlightNode.style.border = "2px solid red";
+      highlightNode.style.outline = "2px solid red ";
     }
   }, [selectedHighlightId]);
 
