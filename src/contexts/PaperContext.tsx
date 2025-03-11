@@ -14,10 +14,10 @@ import {
 import { CommentedHighlight } from "../components/paper-components/HighlightContainer";
 
 type PaperContextData = {
-  
   highlights: Array<CommentedHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
   updateHighlight: (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => void;
+  deleteHighlight: (highlightId: string) => void;
   resetHighlights: () => void;
   // Graph
   nodes: Array<Node>;
@@ -101,10 +101,12 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
           id: `${currentReadId}-${temporalSeq}`,
           readRecordId: currentReadId,
           label: highlight.content.text,
-          content: highlight.content.text
+          content: highlight.content.text,
         },
         position: {
-          x: isFirstHighlight ? Object.keys(readRecords).findIndex(id => id === currentReadId) * NODE_OFFSET_X : nodes[nodes.length - 1].position.x,
+          x: isFirstHighlight
+            ? Object.keys(readRecords).findIndex((id) => id === currentReadId) * NODE_OFFSET_X
+            : nodes[nodes.length - 1].position.x,
           y: isFirstHighlight ? NODE_OFFSET_Y : nodes[nodes.length - 1].position.y + NODE_OFFSET_Y,
         },
       },
@@ -142,6 +144,15 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     );
   };
 
+  const deleteHighlight = (highlightId: string) => {
+    console.log("Delete highlight", highlightId);
+    setHighlights(highlights.filter((h) => h.id !== highlightId));
+    setNodes(nodes.filter((n) => n.id !== highlightId));
+    setEdges(edges.filter((e) => e.id !== highlightId && e.source !== highlightId && e.target !== highlightId));
+    setSelectedHighlightId(null);
+    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq - 1);
+  };
+
   const resetHighlights = () => {
     setHighlights([]);
   };
@@ -158,11 +169,11 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const hideRead = (readId: string) => {
     setDisplayedReads((prevDisplayedReads) => prevDisplayedReads.filter((id) => id !== readId));
-  }
+  };
 
   const showRead = (readId: string) => {
     setDisplayedReads((prevDisplayedReads) => [...prevDisplayedReads, readId]);
-  }
+  };
 
   return (
     <PaperContext.Provider
@@ -170,6 +181,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         highlights,
         addHighlight,
         updateHighlight,
+        deleteHighlight,
         resetHighlights,
         // Graph
         nodes,
