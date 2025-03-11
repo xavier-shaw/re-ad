@@ -137,11 +137,11 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         const { id, position: originalPosition, content: originalContent, ...rest } = h;
         return id === highlightId
           ? {
-              id,
-              position: { ...originalPosition, ...position },
-              content: { ...originalContent, ...content },
-              ...rest,
-            }
+            id,
+            position: { ...originalPosition, ...position },
+            content: { ...originalContent, ...content },
+            ...rest,
+          }
           : h;
       })
     );
@@ -157,7 +157,12 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   };
 
   const resetHighlights = () => {
+    console.log("Reset highlights");
     setHighlights([]);
+    setNodes([]);
+    setEdges([]);
+    setSelectedHighlightId(null);
+    setTemporalSeq(0);
   };
 
   const createRead = (title: string, color: string) => {
