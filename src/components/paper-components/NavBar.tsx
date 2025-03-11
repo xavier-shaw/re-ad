@@ -22,8 +22,17 @@ export default function NavBar() {
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { readRecords, currentReadId, setCurrentReadId, setIsAddingNewRead, displayedReads, hideRead, showRead } =
+  const { paperUrl, readRecords, currentReadId, setCurrentReadId, setIsAddingNewRead, displayedReads, hideRead, showRead } =
     paperContext;
+
+  const handleAddRead = () => {
+    if (!paperUrl) {
+      alert("Please upload a paper first");
+      return;
+    }
+
+    setIsAddingNewRead(true);
+  };
 
   return (
     <div className="NavBar">
@@ -62,7 +71,7 @@ export default function NavBar() {
           ))}
 
         {Object.values(readRecords).length > 0 ? (
-          <IconButton onClick={() => setIsAddingNewRead(true)}>
+          <IconButton onClick={handleAddRead}>
             <Add />
           </IconButton>
         ) : (
@@ -71,7 +80,7 @@ export default function NavBar() {
             size="small"
             variant="text"
             startIcon={<Add />}
-            onClick={() => setIsAddingNewRead(true)}
+            onClick={handleAddRead}
           >
             {/* for some ungodly reason this text refuses to be centered so this will do */}
             <span style={{ lineHeight: 0 }}>NEW READ</span>

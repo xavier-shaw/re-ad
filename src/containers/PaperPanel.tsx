@@ -26,6 +26,8 @@ function PaperPanel() {
     throw new Error("PaperContext not found");
   }
   const {
+    paperUrl,
+    setPaperUrl,
     highlights,
     addHighlight,
     resetHighlights,
@@ -45,8 +47,6 @@ function PaperPanel() {
   // const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
   // const searchParams = new URLSearchParams(document.location.search);
   // const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
-
-  const [pdfFile, setPdfFile] = useState<string | null>(null);
 
   // Refs for PdfHighlighter utilities
   const highlighterUtilsRef = useRef<PdfHighlighterUtils>(null);
@@ -95,7 +95,7 @@ function PaperPanel() {
     if (file && file.type === "application/pdf") {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPdfFile(e.target?.result as string);
+        setPaperUrl(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     } else {
@@ -105,7 +105,7 @@ function PaperPanel() {
 
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
-      {!pdfFile ?
+      {!paperUrl ?
         <Box sx={{
           width: "100%",
           height: "100%",
@@ -186,7 +186,7 @@ function PaperPanel() {
             }}
             className="pdf"
           >
-            <PdfLoader document={pdfFile}>
+            <PdfLoader document={paperUrl}>
               {(pdfDocument) => (
                 <PdfHighlighter
                   enableAreaSelection={(event) => event.altKey}

@@ -14,18 +14,27 @@ export const PaperReader = () => {
   }
   const { isAddingNewRead, setIsAddingNewRead, createRead } = paperContext;
 
-  const [title, setTitle] = useState("");
-  const [color, setColor] = useState("#000000");
-  const colorInputRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState<string | null>("");
+  const [color, setColor] = useState<string | null>(null);
 
   const handleCreateRead = () => {
+    if (!title) {
+      alert("Please enter a title");
+      return;
+    }
+
+    if (!color) {
+      alert("Please select a color");
+      return;
+    }
+
     createRead(title, color);
     handleCancel();
   };
 
   const handleCancel = () => {
     setTitle("");
-    setColor("#000000");
+    setColor(null);
     setIsAddingNewRead(false);
   };
 

@@ -15,6 +15,9 @@ import { ReadHighlight } from "../components/paper-components/HighlightContainer
 import { NodeData } from "../components/node-components/NodeEditor";
 
 type PaperContextData = {
+  // Paper
+  paperUrl: string | null;
+  setPaperUrl: (paperUrl: string | null) => void;
   highlights: Array<ReadHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
@@ -142,11 +145,13 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
     // add an edge to the graph
     if (!isFirstHighlight) {
+      // TODO: should temporal link capture the switch between reads?
+      const lastHighlightId = highlights[highlights.length - 1]?.id;
       setEdges((prevEdges: Array<Edge>) => [
         ...prevEdges,
         {
           id: id,
-          source: highlights[highlights.length - 1]?.id,
+          source: lastHighlightId,
           target: id,
           type: "temporal",
           markerEnd: { type: MarkerType.Arrow },
@@ -175,9 +180,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     console.log("Delete highlight", highlightId);
     setHighlights(highlights.filter((h) => h.id !== highlightId));
     setNodes(nodes.filter((n) => n.id !== highlightId));
+    // TODO: connnect prev and next node
     setEdges(edges.filter((e) => e.id !== highlightId && e.source !== highlightId && e.target !== highlightId));
     setSelectedHighlightId(null);
-    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq - 1);
   };
 
   const resetHighlights = () => {
@@ -210,6 +215,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   return (
     <PaperContext.Provider
       value={{
+        // Paper
+        paperUrl,
+        setPaperUrl,
         highlights,
         addHighlight,
         updateNodeData,

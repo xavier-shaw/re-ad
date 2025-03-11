@@ -65,7 +65,7 @@ function NodeEditor({ selectedHighlightId }: NodeEditorProps) {
           )}
         </div>
       </Box>
-      <Summary className="field" />
+      <Summary className="field" text={selectedNode?.data.content as string} />
       <References className="field" />
       <Box className="field">
         <h3>Notes</h3>
