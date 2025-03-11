@@ -49,6 +49,8 @@ function Flow(props: any) {
   };
 
   const onNodeClick: NodeMouseHandler = (event, node) => {
+    if (isOverview) return;
+
     if (selectedHighlightId === node.id) {
       setSelectedHighlightId(null);
     } else {
@@ -62,12 +64,14 @@ function Flow(props: any) {
   };
 
   const openOverview = () => {
+    console.log("open Overview");
     if (isOverview) {
       setNodes(nodes.map((node: any) => ({ ...node, type: "highlight" })));
     } else {
       setNodes(nodes.map((node: any) => ({ ...node, type: "overview" })));
     }
 
+    setSelectedHighlightId(null);
     setIsOverview(!isOverview);
   };
 
@@ -153,7 +157,7 @@ export default function GraphPanel() {
             zIndex: 5,
           }}
         >
-          <NodeEditor highlight={selectedHighlightId} />
+          <NodeEditor selectedHighlightId={selectedHighlightId} />
         </Box>
       )}
     </Box>

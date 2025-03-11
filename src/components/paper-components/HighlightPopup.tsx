@@ -1,9 +1,9 @@
 import type { ViewportHighlight } from "react-pdf-highlighter-extended";
-import { CommentedHighlight } from "./HighlightContainer";
+import { ReadHighlight } from "./HighlightContainer";
 import "../../styles/HighlightPopup.css";
 
 interface HighlightPopupProps {
-    highlight: ViewportHighlight<CommentedHighlight>;
+    highlight: ViewportHighlight<ReadHighlight>;
 }
 
 const HighlightPopup = ({ highlight }: HighlightPopupProps) => {

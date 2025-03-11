@@ -11,10 +11,10 @@ import {
   Connection,
   MarkerType,
 } from "@xyflow/react";
-import { CommentedHighlight } from "../components/paper-components/HighlightContainer";
+import { ReadHighlight } from "../components/paper-components/HighlightContainer";
 
 type PaperContextData = {
-  highlights: Array<CommentedHighlight>;
+  highlights: Array<ReadHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
   updateHighlight: (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => void;
   deleteHighlight: (highlightId: string) => void;
@@ -52,7 +52,7 @@ type ReadRecord = {
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
-  const [highlights, setHighlights] = useState<Array<CommentedHighlight>>([]);
+  const [highlights, setHighlights] = useState<Array<ReadHighlight>>([]);
   const [temporalSeq, setTemporalSeq] = useState(0);
 
   // Shared
@@ -100,7 +100,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight, highlights);
-    setHighlights((prevHighlights: Array<CommentedHighlight>) => [
+    setHighlights((prevHighlights: Array<ReadHighlight>) => [
       ...prevHighlights,
       {
         ...highlight,
@@ -150,7 +150,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const updateHighlight = (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => {
     console.log("Update highlight", highlightId, position, content);
-    setHighlights((prevHighlights: Array<CommentedHighlight>) =>
+    setHighlights((prevHighlights: Array<ReadHighlight>) =>
       prevHighlights.map((h) => {
         const { id, position: originalPosition, content: originalContent, ...rest } = h;
         return id === highlightId

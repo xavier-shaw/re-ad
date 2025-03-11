@@ -18,7 +18,10 @@ export default function OverviewNode({ data }: NodeProps<Node>) {
         <Box className="overview-node" id={`node-${id}`} sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}>
             <Handle type="target" position={Position.Top} />
             {type === "area" ? (
-                <img src={label} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
+                <>
+                    <img src={label} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
+                    <br />
+                </>
             ) : (
                 <Typography variant="h6">{label}</Typography>
             )}

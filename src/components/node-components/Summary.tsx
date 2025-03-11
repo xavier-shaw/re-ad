@@ -3,13 +3,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface SummaryProps {
   className: string;
-  text: string;
 }
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
-function Summary({ className, text }: SummaryProps) {
+function Summary({ className }: SummaryProps) {
   const [summary, setSummary] = useState<string>("");
 
   // useEffect(() => {

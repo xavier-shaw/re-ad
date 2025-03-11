@@ -1,14 +1,14 @@
 import "../../styles/Sidebar.css";
-import { CommentedHighlight } from "./HighlightContainer";
+import { ReadHighlight } from "./HighlightContainer";
 import { PaperContext } from "../../contexts/PaperContext";
 import { useContext } from "react";
 
 interface SidebarProps {
-  highlights: Array<CommentedHighlight>;
+  highlights: Array<ReadHighlight>;
   resetHighlights: () => void;
 }
 
-const updateHash = (highlight: CommentedHighlight) => {
+const updateHash = (highlight: ReadHighlight) => {
   document.location.hash = `highlight-${highlight.id}`;
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
-import { Box, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 
 import "../styles/PaperPanel.css";
@@ -13,12 +13,12 @@ import {
   ViewportHighlight,
 } from "react-pdf-highlighter-extended";
 
-import HighlightContainer, { CommentedHighlight } from "../components/paper-components/HighlightContainer";
+import HighlightContainer, { ReadHighlight } from "../components/paper-components/HighlightContainer";
 import Sidebar from "../components/paper-components/Sidebar";
 import { PaperContext, PaperContextProvider } from "../contexts/PaperContext";
 import CommentForm from "../components/paper-components/CommentForm";
 import ExpandableTip from "../components/paper-components/ExpandableTip";
-import { ArrowForward } from "@mui/icons-material";
+import { ArrowForward, UploadFile } from "@mui/icons-material";
 
 function PaperPanel() {
   const paperContext = useContext(PaperContext);
@@ -43,11 +43,11 @@ function PaperPanel() {
     document.location.hash = "";
   };
 
-  const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
-  const searchParams = new URLSearchParams(document.location.search);
-  const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
+  // const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
+  // const searchParams = new URLSearchParams(document.location.search);
+  // const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 
-  const [url, setUrl] = useState(initialUrl);
+  const [pdfFile, setPdfFile] = useState<string | null>(null);
 
   // Refs for PdfHighlighter utilities
   const highlighterUtilsRef = useRef<PdfHighlighterUtils>(null);
@@ -89,106 +89,131 @@ function PaperPanel() {
     console.log("selectedHighlightId", selectedHighlightId);
   }, [selectedHighlightId]);
 
-  // const editHighlight = (
-  //   idToUpdate: string,
-  //   edit: Partial<CommentedHighlight>,
-  // ) => {
-  //   console.log(`Editing highlight ${idToUpdate} with `, edit);
-  //   // setHighlights(
-  //   //   highlights.map((highlight) =>
-  //   //     highlight.id === idToUpdate ? { ...highlight, ...edit } : highlight,
-  //   //   ),
-  //   // );
-  // };
-
   const [sideBarOpen, setSideBarOpen] = useState(false);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === "application/pdf") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPdfFile(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Please upload a valid PDF file.");
+    }
+  };
 
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
-      {/* <div>
-                <input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={handleFileUpload}
-                    className="mb-4"
-                />
-            </div> */}
-
-      {sideBarOpen && <Sidebar highlights={highlights} resetHighlights={resetHighlights} />}
-      {sideBarOpen && (
-        <IconButton
-          sx={{
-            position: "absolute",
-            left: "calc(15% - 10px)", // Adjust based on your left panel width
-            top: "50%",
-            transform: "translateY(-50%)",
-            backgroundColor: "white",
-            "&:hover": { backgroundColor: "#f0f0f0" },
-            boxShadow: 2,
-            zIndex: 1000,
-            width: "24px",
-            height: "48px",
-            borderRadius: "0 4px 4px 0",
-          }}
-          onClick={() => setSideBarOpen(false)}
-        >
-          <ArrowBack />
-        </IconButton>
-      )}
-      {!sideBarOpen && (
-        <IconButton
-          sx={{
-            position: "fixed",
-            left: "0",
-            top: "50%",
-            transform: "translateY(-50%)",
-            backgroundColor: "white",
-            "&:hover": { backgroundColor: "#f0f0f0" },
-            boxShadow: 2,
-            zIndex: 1000,
-            width: "24px",
-            height: "48px",
-            borderRadius: "0 4px 4px 0",
-          }}
-          onClick={() => setSideBarOpen(true)}
-        >
-          <ArrowForward />
-        </IconButton>
-      )}
-
-      <div
-        style={{
+      {!pdfFile ?
+        <Box sx={{
+          width: "100%",
           height: "100%",
-          width: sideBarOpen ? "calc(75%)" : "100%",
-          position: "relative",
-        }}
-        className="pdf"
-      >
-        <PdfLoader document={url}>
-          {(pdfDocument) => (
-            <PdfHighlighter
-              enableAreaSelection={(event) => event.altKey}
-              pdfDocument={pdfDocument}
-              onScrollAway={resetHash}
-              utilsRef={(_pdfHighlighterUtils) => {
-                highlighterUtilsRef.current = _pdfHighlighterUtils;
-              }}
-              // pdfScaleValue={pdfScaleValue}
-              // textSelectionColor={undefined}
-              // onSelection={undefined}
-              selectionTip={
-                Object.keys(readRecords).length > 0 ? (
-                  <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} />
-                ) : null
-              }
-              highlights={highlights}
-              textSelectionColor={readRecords[currentReadId]?.color}
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+          {/* Hidden Input for File Upload */}
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+            id="pdf-upload"
+          />
+
+          {/* Button to Trigger File Upload */}
+          <label htmlFor="pdf-upload">
+            <Button
+              variant="contained"
+              component="span"
+              startIcon={<UploadFile />}
             >
-              <HighlightContainer readRecords={readRecords} displayedReads={displayedReads} />
-            </PdfHighlighter>
+              Upload PDF
+            </Button>
+          </label>
+        </Box>
+        :
+        <>
+          {sideBarOpen && <Sidebar highlights={highlights} resetHighlights={resetHighlights} />}
+          {sideBarOpen && (
+            <IconButton
+              sx={{
+                position: "absolute",
+                left: "calc(15% - 10px)", // Adjust based on your left panel width
+                top: "50%",
+                transform: "translateY(-50%)",
+                backgroundColor: "white",
+                "&:hover": { backgroundColor: "#f0f0f0" },
+                boxShadow: 2,
+                zIndex: 1000,
+                width: "24px",
+                height: "48px",
+                borderRadius: "0 4px 4px 0",
+              }}
+              onClick={() => setSideBarOpen(false)}
+            >
+              <ArrowBack />
+            </IconButton>
           )}
-        </PdfLoader>
-      </div>
+          {!sideBarOpen && (
+            <IconButton
+              sx={{
+                position: "fixed",
+                left: "0",
+                top: "50%",
+                transform: "translateY(-50%)",
+                backgroundColor: "white",
+                "&:hover": { backgroundColor: "#f0f0f0" },
+                boxShadow: 2,
+                zIndex: 1000,
+                width: "24px",
+                height: "48px",
+                borderRadius: "0 4px 4px 0",
+              }}
+              onClick={() => setSideBarOpen(true)}
+            >
+              <ArrowForward />
+            </IconButton>
+          )}
+
+          <div
+            style={{
+              height: "100%",
+              width: sideBarOpen ? "calc(75%)" : "100%",
+              position: "relative",
+            }}
+            className="pdf"
+          >
+            <PdfLoader document={pdfFile}>
+              {(pdfDocument) => (
+                <PdfHighlighter
+                  enableAreaSelection={(event) => event.altKey}
+                  pdfDocument={pdfDocument}
+                  onScrollAway={resetHash}
+                  utilsRef={(_pdfHighlighterUtils) => {
+                    highlighterUtilsRef.current = _pdfHighlighterUtils;
+                  }}
+                  // pdfScaleValue={pdfScaleValue}
+                  // textSelectionColor={undefined}
+                  // onSelection={undefined}
+                  selectionTip={
+                    Object.keys(readRecords).length > 0 ? (
+                      <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} />
+                    ) : null
+                  }
+                  highlights={highlights}
+                  textSelectionColor={readRecords[currentReadId]?.color}
+                >
+                  <HighlightContainer readRecords={readRecords} displayedReads={displayedReads} />
+                </PdfHighlighter>
+              )}
+            </PdfLoader>
+          </div>
+        </>
+      }
     </Box>
   );
 }

@@ -65,21 +65,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.link.button {
-  background-color: #6c757d;
-  color: white;
-}
-
-.save.button {
-  background-color: #28a745;
-  color: white;
-}
-
-.delete.button {
-  background-color: #dc3545;
-  color: white;
-}
-
 .button:hover {
   opacity: 0.85;
   transform: translateY(-2px);
