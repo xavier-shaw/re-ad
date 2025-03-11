@@ -145,7 +145,7 @@ export default function GraphPanel() {
             zIndex: 5,
           }}
         >
-          <NodeEditor selectedHighlightId={selectedHighlightId} />
+          <NodeEditor />
         </Box>
       )}
     </Box>
