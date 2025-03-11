@@ -35,7 +35,7 @@ export default function NavBar() {
       <Box className="highlights" sx={{ mx: 2 }}>
         {Object.values(readRecords).length > 0 &&
           Object.values(readRecords).map((readRecord) => (
-            <div className="read" key={readRecord.id}>
+            <Box className="read" key={readRecord.id} sx={{ borderBottom: currentReadId === readRecord.id ? `2px solid ${readRecord.color}` : "none" }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -58,7 +58,7 @@ export default function NavBar() {
                 }
                 label={readRecord.title}
               />
-            </div>
+            </Box>
           ))}
 
         {Object.values(readRecords).length > 0 ? (
