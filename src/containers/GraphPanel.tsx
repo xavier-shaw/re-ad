@@ -12,7 +12,7 @@ import {
   useReactFlow,
   ReactFlowProvider,
 } from "@xyflow/react";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, selectClasses } from "@mui/material";
 import HighlightNode from "../components/graph-components/HighlightNode";
 import OverviewNode from "../components/graph-components/OverviewNode";
 import TemporalEdge from "../components/graph-components/TemporalEdge";
@@ -55,11 +55,6 @@ function Flow(props: any) {
       setSelectedHighlightId(null);
     } else {
       setSelectedHighlightId(node.id);
-    }
-
-    const currentHighlightNode = document.getElementById(`node-${selectedHighlightId}`);
-    if (currentHighlightNode) {
-      currentHighlightNode.style.outline = "none";
     }
   };
 
@@ -120,13 +115,6 @@ export default function GraphPanel() {
     selectedHighlightId,
     setSelectedHighlightId,
   } = paperContext;
-
-  useEffect(() => {
-    const highlightNode = document.getElementById(`node-${selectedHighlightId}`);
-    if (highlightNode) {
-      highlightNode.style.outline = "2px solid red ";
-    }
-  }, [selectedHighlightId]);
 
   return (
     <Box style={{ width: "100%", height: "100%", position: "relative" }}>

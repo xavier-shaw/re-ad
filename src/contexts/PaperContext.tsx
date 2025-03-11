@@ -104,21 +104,20 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       ...prevHighlights,
       {
         ...highlight,
-        id: `${currentReadId}-${temporalSeq}`,
+        id: id,
         readRecordId: currentReadId,
       },
     ]);
-    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
 
     // add a node to the graph
     const isFirstHighlight = temporalSeq === 0;
     setNodes((prevNodes: Array<Node>) => [
       ...prevNodes,
       {
-        id: `${currentReadId}-${temporalSeq}`,
+        id: id,
         type: "highlight",
         data: {
-          id: `${currentReadId}-${temporalSeq}`,
+          id: id,
           readRecordId: currentReadId,
           ...processHighlightText(highlight)
         },
@@ -138,14 +137,16 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       setEdges((prevEdges: Array<Edge>) => [
         ...prevEdges,
         {
-          id: `${currentReadId}-${temporalSeq}`,
+          id: id,
           source: highlights[highlights.length - 1]?.id,
-          target: `${currentReadId}-${temporalSeq}`,
+          target: id,
           type: "temporal",
           markerEnd: { type: MarkerType.Arrow },
         },
       ]);
     }
+
+    setSelectedHighlightId(id);
   };
 
   const updateHighlight = (highlightId: string, position: Partial<ScaledPosition>, content: Partial<Content>) => {
@@ -155,11 +156,11 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         const { id, position: originalPosition, content: originalContent, ...rest } = h;
         return id === highlightId
           ? {
-            id,
-            position: { ...originalPosition, ...position },
-            content: { ...originalContent, ...content },
-            ...rest,
-          }
+              id,
+              position: { ...originalPosition, ...position },
+              content: { ...originalContent, ...content },
+              ...rest,
+            }
           : h;
       })
     );
