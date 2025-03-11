@@ -1,26 +1,11 @@
 import "./App.css";
-import GraphPanel from "./containers/GraphPanel";
-import PaperPanel from "./containers/PaperPanel";
-import { Box } from "@mui/material";
 import { PaperContextProvider } from "./contexts/PaperContext";
-import NavBar from "./components/paper-components/NavBar";
+import { PaperReader } from "./containers/PaperReader";
 
 function App() {
   return (
     <PaperContextProvider>
-      <div className="App">
-        <header>
-          <NavBar />
-        </header>
-        <div className="content">
-          <Box className="panel paper-panel">
-            <PaperPanel />
-          </Box>
-          <Box className="panel graph-panel">
-            <GraphPanel />
-          </Box>
-        </div>
-      </div>
+      <PaperReader />
     </PaperContextProvider>
   );
 }

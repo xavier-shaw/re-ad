@@ -179,7 +179,7 @@ function PaperPanel() {
               // pdfScaleValue={pdfScaleValue}
               // textSelectionColor={undefined}
               // onSelection={undefined}
-              selectionTip={<ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId].color} />}
+              selectionTip={<ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} />}
               highlights={highlights}
             >
               <HighlightContainer readRecords={readRecords} />

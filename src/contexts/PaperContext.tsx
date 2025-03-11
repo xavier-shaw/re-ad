@@ -28,6 +28,9 @@ type PaperContextData = {
   onConnect: (connection: Connection) => void;
   // Shared
   readRecords: Record<string, ReadRecord>;
+  isAddingNewRead: boolean;
+  setIsAddingNewRead: (isAddingNewRead: boolean) => void;
+  createRead: (title: string, color: string) => void;
   currentReadId: string;
   setCurrentReadId: (readId: string) => void;
   selectedHighlightId: string | null;
@@ -49,18 +52,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   const [temporalSeq, setTemporalSeq] = useState(0);
 
   // Shared
-  const [readRecords, setReadRecords] = useState<Record<string, ReadRecord>>({
-    "0": {
-      id: "0",
-      title: "Read 0",
-      color: "rgba(238, 205, 114, 0.5)",
-    },
-    "1": {
-      id: "1",
-      title: "Read 1",
-      color: "rgba(50, 157, 48, 0.5)",
-    },
-  });
+  const [readRecords, setReadRecords] = useState<Record<string, ReadRecord>>({});
+  const [isAddingNewRead, setIsAddingNewRead] = useState(false);
   const [currentReadId, setCurrentReadId] = useState("0");
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
 
@@ -148,6 +141,15 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setHighlights([]);
   };
 
+  const createRead = (title: string, color: string) => {
+    const newReadId = Object.keys(readRecords).length.toString();
+    setReadRecords((prevReadRecords) => ({
+      ...prevReadRecords,
+      [newReadId]: { id: newReadId, title, color },
+    }));
+    setCurrentReadId(newReadId);
+  };
+
   return (
     <PaperContext.Provider
       value={{
@@ -165,10 +167,13 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         onConnect,
         // Shared
         readRecords,
+        isAddingNewRead,
+        setIsAddingNewRead,
         currentReadId,
         setCurrentReadId,
         selectedHighlightId,
         setSelectedHighlightId,
+        createRead,
       }}
     >
       {children}
