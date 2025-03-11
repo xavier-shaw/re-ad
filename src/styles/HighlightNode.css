@@ -1,6 +1,11 @@
 .highlight-node {
-    background-color: lightgray;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #171616;
+  background-color: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #171616;
+  outline: none;
+}
+
+.highlight-node.selected {
+  outline: 2px solid red;
 }
