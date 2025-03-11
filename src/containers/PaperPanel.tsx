@@ -34,7 +34,7 @@ function PaperPanel() {
     setSelectedHighlightId,
     currentReadId,
     readRecords,
-    displayedReads
+    displayedReads,
   } = paperContext;
 
   const parseIdFromHash = () => document.location.hash.slice("#highlight-".length);
@@ -89,7 +89,6 @@ function PaperPanel() {
     console.log("selectedHighlightId", selectedHighlightId);
   }, [selectedHighlightId]);
 
-
   // const editHighlight = (
   //   idToUpdate: string,
   //   edit: Partial<CommentedHighlight>,
@@ -115,23 +114,21 @@ function PaperPanel() {
                 />
             </div> */}
 
-      {sideBarOpen && (
-        <Sidebar highlights={highlights} resetHighlights={resetHighlights} />
-      )}
+      {sideBarOpen && <Sidebar highlights={highlights} resetHighlights={resetHighlights} />}
       {sideBarOpen && (
         <IconButton
           sx={{
-            position: 'absolute',
-            left: 'calc(15% - 10px)', // Adjust based on your left panel width
-            top: '50%',
-            transform: 'translateY(-50%)',
-            backgroundColor: 'white',
-            '&:hover': { backgroundColor: '#f0f0f0' },
+            position: "absolute",
+            left: "calc(15% - 10px)", // Adjust based on your left panel width
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "white",
+            "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: 2,
             zIndex: 1000,
-            width: '24px',
-            height: '48px',
-            borderRadius: '0 4px 4px 0'
+            width: "24px",
+            height: "48px",
+            borderRadius: "0 4px 4px 0",
           }}
           onClick={() => setSideBarOpen(false)}
         >
@@ -141,17 +138,17 @@ function PaperPanel() {
       {!sideBarOpen && (
         <IconButton
           sx={{
-            position: 'fixed',
-            left: '0',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            backgroundColor: 'white',
-            '&:hover': { backgroundColor: '#f0f0f0' },
+            position: "fixed",
+            left: "0",
+            top: "50%",
+            transform: "translateY(-50%)",
+            backgroundColor: "white",
+            "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: 2,
             zIndex: 1000,
-            width: '24px',
-            height: '48px',
-            borderRadius: '0 4px 4px 0'
+            width: "24px",
+            height: "48px",
+            borderRadius: "0 4px 4px 0",
           }}
           onClick={() => setSideBarOpen(true)}
         >
@@ -165,7 +162,7 @@ function PaperPanel() {
           width: sideBarOpen ? "calc(75%)" : "100%",
           position: "relative",
         }}
-        className="help"
+        className="pdf"
       >
         <PdfLoader document={url}>
           {(pdfDocument) => (
@@ -179,10 +176,15 @@ function PaperPanel() {
               // pdfScaleValue={pdfScaleValue}
               // textSelectionColor={undefined}
               // onSelection={undefined}
-              selectionTip={Object.keys(readRecords).length > 0 ? <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} /> : null}
+              selectionTip={
+                Object.keys(readRecords).length > 0 ? (
+                  <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} />
+                ) : null
+              }
               highlights={highlights}
+              textSelectionColor={readRecords[currentReadId]?.color}
             >
-              <HighlightContainer readRecords={readRecords} displayedReads={displayedReads}/>
+              <HighlightContainer readRecords={readRecords} displayedReads={displayedReads} />
             </PdfHighlighter>
           )}
         </PdfLoader>
