@@ -45,41 +45,25 @@ function HighlightContainer({
         highlightBindings,
     } = useHighlightContainerContext<CommentedHighlight>();
 
-    const { toggleEditInProgress } = usePdfHighlighterContext();
-
     return (
-        <TextHighlight
-            isScrolledTo={isScrolledTo}
-            highlight={highlight}
-            style={{
-                background: readRecords[highlight.readRecordId].color,
-            }}
-        />
-    )
-    // : (
-    //     <AreaHighlight
-    //         isScrolledTo={isScrolledTo}
-    //         highlight={highlight}
-    //         onChange={(boundingRect) => {
-    //             const edit = {
-    //                 position: {
-    //                     boundingRect: viewportToScaled(boundingRect),
-    //                     rects: [],
-    //                 },
-    //                 content: {
-    //                     image: screenshot(boundingRect),
-    //                 },
-    //             };
-
-    //             // editHighlight(highlight.id, edit);
-    //             toggleEditInProgress(false);
-    //         }}
-    //         bounds={highlightBindings.textLayer}
-    //         style={{
-    //             background: readRecords[highlight.readRecordId].color,
-    //         }}
-    //     />
-    // );
+        highlight.type === "text" ?
+            <TextHighlight
+                isScrolledTo={isScrolledTo}
+                highlight={highlight}
+                style={{
+                    background: readRecords[highlight.readRecordId].color,
+                }}
+            />
+            :
+            <AreaHighlight
+                isScrolledTo={isScrolledTo}
+                highlight={highlight}
+                bounds={highlightBindings.textLayer}
+                style={{
+                    background: readRecords[highlight.readRecordId].color,
+                }}
+            />
+    );
 
     // const highlightTip: Tip = {
     //     position: highlight.position,

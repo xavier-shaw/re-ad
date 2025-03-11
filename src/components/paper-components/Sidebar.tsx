@@ -1,5 +1,7 @@
 import "../../styles/Sidebar.css";
 import { CommentedHighlight } from "./HighlightContainer";
+import { PaperContext } from "../../contexts/PaperContext";
+import { useContext } from "react";
 
 interface SidebarProps {
   highlights: Array<CommentedHighlight>;
@@ -14,6 +16,19 @@ const Sidebar = ({
   highlights,
   resetHighlights,
 }: SidebarProps) => {
+  const paperContext = useContext(PaperContext);
+  if (!paperContext) {
+    throw new Error("PaperContext not found");
+  }
+  const { readRecords } = paperContext;
+
+  const convertColorToRGBA = (color: string) => {
+    const r = parseInt(color.slice(1, 3), 16)
+    const g = parseInt(color.slice(3, 5), 16)
+    const b = parseInt(color.slice(5, 7), 16)
+    return `rgba(${r}, ${g}, ${b}, 1)`;
+  }
+
   return (
     <div className="sidebar" style={{ width: "25%" }}>
       {/* Highlights list */}
@@ -26,10 +41,10 @@ const Sidebar = ({
               onClick={() => {
                 updateHash(highlight);
               }}
+              style={{ backgroundColor: convertColorToRGBA(readRecords[highlight.readRecordId].color) }}
             >
               <div>
                 {/* Highlight comment and text */}
-                <strong>{highlight.comment}</strong>
                 {highlight.content.text && (
                   <blockquote style={{ marginTop: "0.5rem" }}>
                     {`${highlight.content.text.slice(0, 90).trim()}…`}

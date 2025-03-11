@@ -171,6 +171,7 @@ function PaperPanel() {
         <PdfLoader document={url}>
           {(pdfDocument) => (
             <PdfHighlighter
+              enableAreaSelection={(event) => event.altKey}
               pdfDocument={pdfDocument}
               onScrollAway={resetHash}
               utilsRef={(_pdfHighlighterUtils) => {
@@ -179,7 +180,7 @@ function PaperPanel() {
               // pdfScaleValue={pdfScaleValue}
               // textSelectionColor={undefined}
               // onSelection={undefined}
-              selectionTip={<ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} />}
+              selectionTip={Object.keys(readRecords).length > 0 ? <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} /> : null}
               highlights={highlights}
             >
               <HighlightContainer readRecords={readRecords} />

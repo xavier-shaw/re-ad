@@ -2,20 +2,15 @@ import '@xyflow/react/dist/style.css';
 import { useState, useCallback, useContext, useEffect } from 'react';
 import {
     ReactFlow,
-    addEdge,
-    type Node,
-    type Edge,
     type FitViewOptions,
     type OnNodeDrag,
     Background,
     Controls,
     MiniMap,
-    useNodesState,
-    useEdgesState,
-    Connection,
     Panel,
-    MarkerType,
     NodeMouseHandler,
+    useReactFlow,
+    ReactFlowProvider
 } from '@xyflow/react';
 import { Box, Button } from '@mui/material';
 import HighlightNode from '../components/graph-components/HighlightNode';
@@ -24,7 +19,6 @@ import TemporalEdge from '../components/graph-components/TemporalEdge';
 import RelationEdge from '../components/graph-components/RelationEdge';
 import { PaperContext } from '../contexts/PaperContext';
 import NodeEditor from '../components/node-components/NodeEditor';
-
 
 const nodeTypes = {
     highlight: HighlightNode,
@@ -36,21 +30,9 @@ const edgeTypes = {
     relation: RelationEdge
 };
 
-export default function GraphPanel() {
-    const paperContext = useContext(PaperContext);
-    if (!paperContext) {
-        throw new Error("PaperContext not found");
-    }
-    const { nodes, edges, setNodes, onNodesChange, onEdgesChange, onConnect, selectedHighlightId, setSelectedHighlightId } = paperContext;
-
+function Flow(props: any) {
+    const { nodes, edges, setNodes, onNodesChange, onEdgesChange, onConnect, selectedHighlightId, setSelectedHighlightId } = props;
     const [isOverview, setIsOverview] = useState(false);
-
-    useEffect(() => {
-        const highlightNode = document.getElementById(`node-${selectedHighlightId}`);
-        if (highlightNode) {
-            highlightNode.style.border = '2px solid red';
-        }
-    }, [selectedHighlightId]);
 
     const onNodeDrag: OnNodeDrag = (_, node) => {
         console.log('drag event', node.data);
@@ -72,37 +54,72 @@ export default function GraphPanel() {
 
     const openOverview = () => {
         if (isOverview) {
-            setNodes(nodes.map(node => ({ ...node, type: 'highlight' })));
+            setNodes(nodes.map((node: any) => ({ ...node, type: 'highlight' })));
         } else {
-            setNodes(nodes.map(node => ({ ...node, type: 'overview' })));
+            setNodes(nodes.map((node: any) => ({ ...node, type: 'overview' })));
         }
 
         setIsOverview(!isOverview);
     };
 
+    const { fitView } = useReactFlow();
+    useEffect(() => {
+        fitView();
+    }, [nodes.length]);
+
+    return (
+        <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeDrag={onNodeDrag}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            fitView
+            style={{ width: '100%', height: '100%' }}
+        >
+            <Background />
+            <Controls style={{ color: 'black' }} />
+            <MiniMap />
+
+            <Panel position="top-right">
+                <Button size="small" onClick={openOverview}>{isOverview ? 'Overview' : 'Highlight'}</Button>
+            </Panel>
+        </ReactFlow>
+    );
+}
+
+export default function GraphPanel() {
+    const paperContext = useContext(PaperContext);
+    if (!paperContext) {
+        throw new Error("PaperContext not found");
+    }
+    const { nodes, edges, setNodes, onNodesChange, onEdgesChange, onConnect, selectedHighlightId, setSelectedHighlightId } = paperContext;
+
+    useEffect(() => {
+        const highlightNode = document.getElementById(`node-${selectedHighlightId}`);
+        if (highlightNode) {
+            highlightNode.style.border = '2px solid red';
+        }
+    }, [selectedHighlightId]);
+
     return (
         <Box style={{ width: '100%', height: '100%', position: 'relative' }}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onNodeDrag={onNodeDrag}
-                onNodeClick={onNodeClick}
-                nodeTypes={nodeTypes}
-                edgeTypes={edgeTypes}
-                fitView
-                style={{ width: '100%', height: '100%' }}
-            >
-                <Background />
-                <Controls />
-                <MiniMap />
-
-                <Panel position="top-right">
-                    <Button size="small" onClick={openOverview}>{isOverview ? 'Overview' : 'Highlight'}</Button>
-                </Panel>
-            </ReactFlow>
+            <ReactFlowProvider>
+                <Flow
+                    nodes={nodes}
+                    edges={edges}
+                    setNodes={setNodes}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    selectedHighlightId={selectedHighlightId}
+                    setSelectedHighlightId={setSelectedHighlightId}
+                />
+            </ReactFlowProvider>
 
             {selectedHighlightId && (
                 <Box style={{

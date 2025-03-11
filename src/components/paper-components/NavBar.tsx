@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import "../../styles/NavBar.css";
 import { PaperContext } from "../../contexts/PaperContext";
-import { Box, Button, Checkbox, FormControl, Icon, IconButton, InputLabel, MenuItem, Select } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, Icon, IconButton, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
 
@@ -14,8 +14,10 @@ export default function NavBar() {
 
   return (
     <div className="NavBar">
-      <h3>RE:AD</h3>
-      <Box className="highlights" sx={{ mx: 1}}>
+      <Typography variant="h4" sx={{ mx: 3 }}>
+        RE:AD
+      </Typography>
+      <Box className="highlights" sx={{ mx: 2 }}>
         {Object.values(readRecords).length > 0 && Object.values(readRecords).map((readRecord) => (
           <div key={readRecord.id}>
             <FormControlLabel
@@ -35,12 +37,18 @@ export default function NavBar() {
           </div>
         ))}
 
-        <IconButton onClick={() => setIsAddingNewRead(true)}>
-          <Add />
-        </IconButton>
+        {Object.values(readRecords).length > 0 ?
+          <IconButton onClick={() => setIsAddingNewRead(true)}>
+            <Add />
+          </IconButton>
+          :
+          <Button size="small" variant="contained" startIcon={<Add />} onClick={() => setIsAddingNewRead(true)}>
+            New Read
+          </Button>
+        }
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
-        <h4>Active Read</h4>
+      <Box sx={{ mx: 3, display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+        <h4>Active Read:</h4>
         {Object.values(readRecords).length > 0 ?
           (
             <div>

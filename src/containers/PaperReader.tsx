@@ -29,7 +29,7 @@ export const PaperReader = () => {
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", width: "100vw", height: "100vh" }}>
-            <Box sx={{ height: "10vh", width: "100%", display: "flex" }}>
+            <Box sx={{ height: "8vh", width: "100%", display: "flex" }}>
                 <NavBar />
             </Box>
             <Box sx={{ display: "flex", flexDirection: "row", width: "100%", height: "90vh" }}>
