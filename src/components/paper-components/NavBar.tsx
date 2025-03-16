@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "../../styles/NavBar.css";
 import { PaperContext } from "../../contexts/PaperContext";
 import {
@@ -17,7 +17,8 @@ import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import logo from "../../assets/re-ad-logo.png";
 
-import Joyride from 'react-joyride';
+import Joyride, { Step } from "react-joyride";
+import { useTour } from "../../contexts/TourContext";
 
 
 export default function NavBar() {
@@ -48,9 +49,18 @@ export default function NavBar() {
     setIsAddingNewRead(true);
   };
 
+  // const [run, setRun] = useState<boolean>(false);
+  const { run  } = useTour();
+  // useEffect(() => {
+  //   const isFirstTourDone = sessionStorage.getItem("firstTourCompleted");
+  //   if (isFirstTourDone === "true") {
+  //     setRun(true);
+  //   }
+  // }, []);
+
   return (
     <div className="NavBar">
-      <Joyride steps={steps} />
+      <Joyride steps={steps} run={run} />
       <div className="logo-text">
         <img src={logo} height={40} />
         <h3>e:ad</h3>

@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
+import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
+import { useTour } from "../contexts/TourContext";
+
 
 import "../styles/PaperPanel.css";
 import {
@@ -21,6 +24,14 @@ import ExpandableTip from "../components/paper-components/ExpandableTip";
 import { ArrowForward, UploadFile } from "@mui/icons-material";
 
 function PaperPanel() {
+
+  const steps = [
+    {
+      target: '.upload-pdf',
+      content: 'Get started by uploading your first PDF!',
+    },
+  ];
+
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
@@ -103,8 +114,23 @@ function PaperPanel() {
     }
   };
 
+  // Callback to set local storage variable to be true upload tour is done.
+  const handleTourCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      sessionStorage.setItem("firstTourCompleted", "true");
+    }
+  };
+
+  const { run, setRun } = useTour();
+
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
+      <Joyride steps={steps} run={true} callback={(data) => {
+        if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
+          setRun(true);
+        }
+      }} />
       {!paperUrl ?
         <Box sx={{
           width: "100%",
@@ -126,6 +152,7 @@ function PaperPanel() {
           {/* Button to Trigger File Upload */}
           <label htmlFor="pdf-upload">
             <Button
+            className="upload-pdf"
               variant="outlined"
               component="span"
               startIcon={<UploadFile />}
