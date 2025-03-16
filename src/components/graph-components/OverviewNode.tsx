@@ -11,7 +11,7 @@ export default function OverviewNode({ data }: NodeProps<Node>) {
         throw new Error("PaperContext not found");
     }
     const { readRecords, displayedReads } = paperContext;
-    const { title, color } = readRecords[readRecordId];
+    const { color } = readRecords[readRecordId];
     const isDisplayed = displayedReads.includes(readRecordId);
 
     return (

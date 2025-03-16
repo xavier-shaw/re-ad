@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import "../../styles/NodeEditor.css";
-import References from "./References";
+// import References from "./References";
 import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { PaperContext } from "../../contexts/PaperContext";
 import { Close } from "@mui/icons-material";
@@ -74,7 +74,7 @@ function NodeEditor() {
 
   return (
     <div className="wrapper">
-      <IconButton size="small" sx={{ position: "absolute", top: 0, right: 0, zIndex: 1000 }} onClick={() => setSelectedHighlightId(null)}>
+      <IconButton size="small" sx={{ position: "absolute", top: 0, right: 0, zIndex: 1000, color: "black" }} onClick={() => setSelectedHighlightId(null)}>
         <Close />
       </IconButton>
       <Box className="field">
@@ -103,7 +103,7 @@ function NodeEditor() {
           <span className="summary-label">(From Gemini)</span> {summary || "Generating summary..."}
         </p>
       </Box>
-      <References className="field" />
+      {/* <References className="field" /> */}
       <Box className="field">
         <h3>Notes</h3>
         <div onClick={() => setIsEditingNotes(true)} style={{ cursor: "pointer" }}>

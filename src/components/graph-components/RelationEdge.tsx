@@ -1,14 +1,12 @@
-import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath, useReactFlow, MarkerType } from "@xyflow/react";
+import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath } from "@xyflow/react";
 
 export default function RelationEdge({
-    id,
     sourceX,
     sourceY,
     targetX,
     targetY,
     sourcePosition,
     targetPosition,
-    markerEnd,
 }: EdgeProps) {
     const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,

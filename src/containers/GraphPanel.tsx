@@ -1,8 +1,8 @@
 import "@xyflow/react/dist/style.css";
-import { useState, useCallback, useContext, useEffect } from "react";
+import Dagre from '@dagrejs/dagre';
+import { useState, useContext, useEffect, useCallback } from "react";
 import {
   ReactFlow,
-  type FitViewOptions,
   type OnNodeDrag,
   Background,
   Controls,
@@ -12,7 +12,7 @@ import {
   useReactFlow,
   ReactFlowProvider,
 } from "@xyflow/react";
-import { Box, Button, IconButton, selectClasses } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import HighlightNode from "../components/graph-components/HighlightNode";
 import OverviewNode from "../components/graph-components/OverviewNode";
 import TemporalEdge from "../components/graph-components/TemporalEdge";
@@ -36,6 +36,7 @@ function Flow(props: any) {
     nodes,
     edges,
     setNodes,
+    setEdges,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -49,7 +50,7 @@ function Flow(props: any) {
   };
 
   const onNodeClick: NodeMouseHandler = (event, node) => {
-    if (isOverview) return;
+    if (isOverview || !event) return;
 
     if (selectedHighlightId === node.id) {
       setSelectedHighlightId(null);
@@ -71,9 +72,53 @@ function Flow(props: any) {
   };
 
   const { fitView } = useReactFlow();
+
+  const getLayoutedElements = (nodes: any, edges: any, options: any) => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+    g.setGraph({ rankdir: options.direction });
+
+    edges.forEach((edge: any) => g.setEdge(edge.source, edge.target));
+    nodes.forEach((node: any) =>
+      g.setNode(node.id, {
+        ...node,
+        width: node.measured?.width ?? 0,
+        height: node.measured?.height ?? 0,
+      }),
+    );
+
+    Dagre.layout(g);
+
+    return {
+      nodes: nodes.map((node: any) => {
+        const position = g.node(node.id);
+        // We are shifting the dagre node position (anchor=center center) to the top left
+        // so it matches the React Flow node anchor point (top left).
+        const x = position.x - (node.measured?.width ?? 0) / 2;
+        const y = position.y - (node.measured?.height ?? 0) / 2;
+
+        return { ...node, position: { x, y } };
+      }),
+      edges,
+    };
+  };
+
+  const onLayout = useCallback((direction: string) => {
+      console.log(nodes);
+      const layouted = getLayoutedElements(nodes, edges, { direction });
+
+      setNodes([...layouted.nodes]);
+      setEdges([...layouted.edges]);
+
+      window.requestAnimationFrame(() => {
+        fitView();
+      });
+    }, [nodes, edges]);
+
   useEffect(() => {
-    fitView();
-  }, [nodes]);
+    if (nodes.length > 0) {
+      onLayout("TB");
+    }
+  }, [nodes.length]);
 
   return (
     <ReactFlow
@@ -90,7 +135,7 @@ function Flow(props: any) {
       style={{ width: "100%", height: "100%" }}
     >
       <Background />
-      <Controls style={{ color: "black" }} />
+      <Controls onFitView={() => onLayout("TB")} style={{ color: "black" }} />
       <MiniMap />
 
       <Panel position="top-right">
@@ -109,6 +154,7 @@ export default function GraphPanel() {
     nodes,
     edges,
     setNodes,
+    setEdges,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -124,6 +170,7 @@ export default function GraphPanel() {
           nodes={nodes}
           edges={edges}
           setNodes={setNodes}
+          setEdges={setEdges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}

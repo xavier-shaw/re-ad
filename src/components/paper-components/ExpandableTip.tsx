@@ -1,5 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import CommentForm from "./CommentForm";
+import { useRef } from "react";
 import {
   GhostHighlight,
   PdfSelection,
@@ -18,9 +17,7 @@ const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
   const {
     getCurrentSelection,
     removeGhostHighlight,
-    setTip,
-    updateTipPosition,
-    getGhostHighlight,
+    setTip
   } = usePdfHighlighterContext();
 
   return (

@@ -1,11 +1,10 @@
 import NavBar from "../components/paper-components/NavBar";
 import PaperPanel from "./PaperPanel";
 import GraphPanel from "./GraphPanel";
-import { Box, DialogTitle, TextField, Dialog, DialogContent, Button, DialogActions, IconButton } from "@mui/material";
+import { Box, DialogTitle, TextField, Dialog, DialogContent, Button, DialogActions } from "@mui/material";
 import "../styles/PaperReader.css";
 import { PaperContext } from "../contexts/PaperContext";
-import { useContext, useRef, useState } from "react";
-import { Add } from "@mui/icons-material";
+import { useContext, useState } from "react";
 
 export const PaperReader = () => {
   const paperContext = useContext(PaperContext);
