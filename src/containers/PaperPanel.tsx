@@ -101,6 +101,7 @@ function PaperPanel() {
 
   const [sideBarOpen, setSideBarOpen] = useState(false);
 
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
@@ -109,28 +110,23 @@ function PaperPanel() {
         setPaperUrl(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+      console.log("here")
+      setRun(true)
     } else {
       alert("Please upload a valid PDF file.");
     }
   };
+  const { setRun } = useTour();
 
-  // Callback to set local storage variable to be true upload tour is done.
   const handleTourCallback = (data: CallBackProps) => {
-    const { status } = data;
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-      sessionStorage.setItem("firstTourCompleted", "true");
-    }
-  };
-
-  const { run, setRun } = useTour();
-
+    console.log("called handleTourCallback!!!")
+    if ((data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED)) {
+      // setRun(true);
+  }
+}
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
-      <Joyride steps={steps} run={true} callback={(data) => {
-        if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
-          setRun(true);
-        }
-      }} />
+      <Joyride steps={steps} run={true} callback={handleTourCallback} />
       {!paperUrl ?
         <Box sx={{
           width: "100%",
@@ -216,6 +212,7 @@ function PaperPanel() {
             <PdfLoader document={paperUrl}>
               {(pdfDocument) => (
                 <PdfHighlighter
+
                   enableAreaSelection={(event) => event.altKey}
                   pdfDocument={pdfDocument}
                   onScrollAway={resetHash}

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 interface TourContextType {
   run: boolean;
   setRun: React.Dispatch<React.SetStateAction<boolean>>;
+  
 }
 
 const TourContext = createContext<TourContextType | undefined>(undefined);

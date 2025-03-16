@@ -49,18 +49,12 @@ export default function NavBar() {
     setIsAddingNewRead(true);
   };
 
-  // const [run, setRun] = useState<boolean>(false);
-  const { run  } = useTour();
-  // useEffect(() => {
-  //   const isFirstTourDone = sessionStorage.getItem("firstTourCompleted");
-  //   if (isFirstTourDone === "true") {
-  //     setRun(true);
-  //   }
-  // }, []);
+  const { run } = useTour();
 
   return (
     <div className="NavBar">
-      <Joyride steps={steps} run={run} />
+      {/* <Joyride steps={steps} run={run} /> */}
+      {run && <Joyride steps={steps} run={run} />}
       <div className="logo-text">
         <img src={logo} height={40} />
         <h3>e:ad</h3>
