@@ -17,28 +17,37 @@ import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import logo from "../../assets/re-ad-logo.png";
 
-import Joyride, { Step, CallBackProps, STATUS} from "react-joyride";
+import Joyride, { Step, CallBackProps, STATUS } from "react-joyride";
 import { useTour } from "../../contexts/TourContext";
 
-
 export default function NavBar() {
-    const steps = [
-      {
-        target: '.setting-up-first-read',
-        content: 'Get started with setting up your first read here! Different reads should be mapped to different intentions.',
-      },
-      {
-        target: '.active-read',
-        content: 'You can see what read you are currently on. Any highlight will be associated with the selected read. Use this to also toggle between your reads.',
-      },
-    ];
+  const steps = [
+    {
+      target: ".setting-up-first-read",
+      content:
+        "Get started with setting up your first read here! Different reads should be mapped to different intentions.",
+    },
+    {
+      target: ".active-read",
+      content:
+        "You can see what read you are currently on. Any highlight will be associated with the selected read. Use this to also toggle between your reads.",
+    },
+  ];
 
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { paperUrl, readRecords, currentReadId, setCurrentReadId, setIsAddingNewRead, displayedReads, hideRead, showRead } =
-    paperContext;
+  const {
+    paperUrl,
+    readRecords,
+    currentReadId,
+    setCurrentReadId,
+    setIsAddingNewRead,
+    displayedReads,
+    hideRead,
+    showRead,
+  } = paperContext;
 
   const handleAddRead = () => {
     if (!paperUrl) {
@@ -52,20 +61,23 @@ export default function NavBar() {
   const { setNavBarRun, setPaperPanelRun, navBarRun } = useTour();
 
   const handleTourCallback = (data: CallBackProps) => {
-    console.log(navBarRun)
+    console.log(navBarRun);
 
-    if ((data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED)) {
+    if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
       // setRun(true);
-      setNavBarRun(false)
-      setPaperPanelRun(true)
-  }
-    
-}
+      setNavBarRun(false);
+      setPaperPanelRun(true);
+    }
+  };
 
   return (
     <div className="NavBar">
       {/* <Joyride steps={steps} run={run} /> */}
-      {navBarRun && <Joyride continuous steps={steps} run={navBarRun} callback={handleTourCallback}/>}
+      {navBarRun && (
+        <div style={{ display: "none" }}>
+          <Joyride continuous steps={steps} run={navBarRun} callback={handleTourCallback} />
+        </div>
+      )}
       <div className="logo-text">
         <img src={logo} height={40} />
         <h3>e:ad</h3>
@@ -74,7 +86,11 @@ export default function NavBar() {
       <Box className="highlights" sx={{ mx: 2 }}>
         {Object.values(readRecords).length > 0 &&
           Object.values(readRecords).map((readRecord) => (
-            <Box className="read" key={readRecord.id} sx={{ borderBottom: currentReadId === readRecord.id ? `2px solid ${readRecord.color}` : "none" }}>
+            <Box
+              className="read"
+              key={readRecord.id}
+              sx={{ borderBottom: currentReadId === readRecord.id ? `2px solid ${readRecord.color}` : "none" }}
+            >
               <FormControlLabel
                 control={
                   <Checkbox
@@ -105,15 +121,11 @@ export default function NavBar() {
             <Add />
           </IconButton>
         ) : (
-          <Button
-            className="mui-button"
-            size="small"
-            variant="text"
-            startIcon={<Add />}
-            onClick={handleAddRead}
-          >
+          <Button className="mui-button" size="small" variant="text" startIcon={<Add />} onClick={handleAddRead}>
             {/* for some ungodly reason this text refuses to be centered so this will do */}
-            <span className="setting-up-first-read" style={{ lineHeight: 0 }}>NEW READ</span>
+            <span className="setting-up-first-read" style={{ lineHeight: 0 }}>
+              NEW READ
+            </span>
           </Button>
         )}
       </Box>
