@@ -17,7 +17,7 @@ import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import logo from "../../assets/re-ad-logo.png";
 
-import Joyride, { Step } from "react-joyride";
+import Joyride, { Step, CallBackProps, STATUS} from "react-joyride";
 import { useTour } from "../../contexts/TourContext";
 
 
@@ -49,12 +49,23 @@ export default function NavBar() {
     setIsAddingNewRead(true);
   };
 
-  const { run } = useTour();
+  const { setNavBarRun, setPaperPanelRun, navBarRun } = useTour();
+
+  const handleTourCallback = (data: CallBackProps) => {
+    console.log(navBarRun)
+
+    if ((data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED)) {
+      // setRun(true);
+      setNavBarRun(false)
+      setPaperPanelRun(true)
+  }
+    
+}
 
   return (
     <div className="NavBar">
       {/* <Joyride steps={steps} run={run} /> */}
-      {run && <Joyride steps={steps} run={run} />}
+      {navBarRun && <Joyride continuous steps={steps} run={navBarRun} callback={handleTourCallback}/>}
       <div className="logo-text">
         <img src={logo} height={40} />
         <h3>e:ad</h3>

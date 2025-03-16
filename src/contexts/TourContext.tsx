@@ -1,18 +1,20 @@
 import React, { createContext, useContext, useState } from "react";
 
 interface TourContextType {
-  run: boolean;
-  setRun: React.Dispatch<React.SetStateAction<boolean>>;
-  
+    navBarRun: boolean;
+    setNavBarRun: React.Dispatch<React.SetStateAction<boolean>>;
+    paperPanelRun: boolean;
+    setPaperPanelRun: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
 
 export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [run, setRun] = useState<boolean>(false);
+    const [paperPanelRun, setPaperPanelRun] = useState<boolean>(true);
+    const [navBarRun, setNavBarRun] = useState<boolean>(false);
 
   return (
-    <TourContext.Provider value={{ run, setRun }}>
+    <TourContext.Provider value={{ navBarRun, setNavBarRun, paperPanelRun, setPaperPanelRun }}>
       {children}
     </TourContext.Provider>
   );
