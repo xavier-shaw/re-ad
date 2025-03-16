@@ -17,7 +17,17 @@ import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import logo from "../../assets/re-ad-logo.png";
 
+import Joyride from 'react-joyride';
+
+
 export default function NavBar() {
+    const steps = [
+      {
+        target: '.setting-up-first-read',
+        content: 'Get started with setting up your first read here! Different reads should be mapped to different intentions.',
+      },
+    ];
+
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
@@ -36,6 +46,7 @@ export default function NavBar() {
 
   return (
     <div className="NavBar">
+      <Joyride steps={steps} />
       <div className="logo-text">
         <img src={logo} height={40} />
         <h3>e:ad</h3>
@@ -83,7 +94,7 @@ export default function NavBar() {
             onClick={handleAddRead}
           >
             {/* for some ungodly reason this text refuses to be centered so this will do */}
-            <span style={{ lineHeight: 0 }}>NEW READ</span>
+            <span className="setting-up-first-read" style={{ lineHeight: 0 }}>NEW READ</span>
           </Button>
         )}
       </Box>
