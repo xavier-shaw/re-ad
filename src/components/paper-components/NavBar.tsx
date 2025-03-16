@@ -26,6 +26,10 @@ export default function NavBar() {
         target: '.setting-up-first-read',
         content: 'Get started with setting up your first read here! Different reads should be mapped to different intentions.',
       },
+      {
+        target: '.active-read',
+        content: 'You can see what read you are currently on. Any highlight will be associated with the selected read. Use this to also toggle between your reads.',
+      },
     ];
 
   const paperContext = useContext(PaperContext);
@@ -98,7 +102,7 @@ export default function NavBar() {
           </Button>
         )}
       </Box>
-      <Box sx={{ mx: 3, display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+      <Box className="active-read" sx={{ mx: 3, display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
         <h4>Active Read:</h4>
         {Object.values(readRecords).length > 0 ? (
           <div>
