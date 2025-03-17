@@ -10,14 +10,18 @@ export default function OverviewNode({ data }: NodeProps<Node>) {
     if (!paperContext) {
         throw new Error("PaperContext not found");
     }
-    const { readRecords, displayedReads } = paperContext;
+    const { readRecords, displayedReads, selectedHighlightId } = paperContext;
     const { color } = readRecords[readRecordId];
     const isDisplayed = displayedReads.includes(readRecordId);
 
     return (
-        <Box className="overview-node" id={`node-${id}`} sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}>
+        <Box
+            className={`overview-node ${id === selectedHighlightId ? "selected" : ""}`}
+            id={`node-${id}`}
+            sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}
+        >
             <Handle type="target" position={Position.Top} />
-            <Typography variant="h6">{label}</Typography>
+            <Typography variant="body1">{label}</Typography>
             {type === "area" &&
                 <>
                     <img src={content} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
