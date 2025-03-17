@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import "../../styles/NodeEditor.css";
-import References from "./References";
+// import References from "./References";
 import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import { PaperContext } from "../../contexts/PaperContext";
 import { Close } from "@mui/icons-material";

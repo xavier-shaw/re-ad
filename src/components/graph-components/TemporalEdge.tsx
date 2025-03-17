@@ -1,7 +1,6 @@
-import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath, useReactFlow, MarkerType } from "@xyflow/react";
+import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath } from "@xyflow/react";
 
 export default function TemporalEdge({
-    id,
     sourceX,
     sourceY,
     targetX,
@@ -10,7 +9,6 @@ export default function TemporalEdge({
     targetPosition,
     markerEnd,
 }: EdgeProps) {
-    const { setEdges } = useReactFlow();
     const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,
         sourceY,
@@ -22,7 +20,7 @@ export default function TemporalEdge({
 
     return (
         <>
-            <BaseEdge path={edgePath} markerEnd={markerEnd} style={{ stroke: 'black', strokeWidth: 1, strokeDasharray: '5,5' }}/>
+            <BaseEdge path={edgePath} markerEnd={markerEnd} style={{ stroke: 'black', strokeWidth: 1, strokeDasharray: '5,5' }} />
             <EdgeLabelRenderer>
                 <div
                     className="nodrag nopan"

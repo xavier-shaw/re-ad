@@ -17,7 +17,7 @@ export default function HighlightNode({ data }: NodeProps<Node>) {
     throw new Error("PaperContext not found");
   }
   const { readRecords, displayedReads, selectedHighlightId } = paperContext;
-  const { title, color } = readRecords[readRecordId];
+  const { color } = readRecords[readRecordId];
   const isDisplayed = displayedReads.includes(readRecordId);
 
   return (

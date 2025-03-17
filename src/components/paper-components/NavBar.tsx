@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useContext } from "react";
 import "../../styles/NavBar.css";
 import { PaperContext } from "../../contexts/PaperContext";
 import {
@@ -6,17 +6,13 @@ import {
   Button,
   Checkbox,
   FormControl,
-  Icon,
   IconButton,
-  InputLabel,
   MenuItem,
-  Select,
-  Typography,
+  Select
 } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import logo from "../../assets/re-ad-logo.svg";
-
+import logo from "/re-ad-logo.png";
 import Joyride, { Step, CallBackProps, STATUS } from "react-joyride";
 import { useTour } from "../../contexts/TourContext";
 

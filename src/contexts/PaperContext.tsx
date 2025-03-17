@@ -1,5 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import { Content, GhostHighlight, ScaledPosition } from "react-pdf-highlighter-extended";
+import { GhostHighlight } from "react-pdf-highlighter-extended";
 import {
   type Node,
   type Edge,

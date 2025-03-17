@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
@@ -7,19 +7,14 @@ import { useTour } from "../contexts/TourContext";
 
 import "../styles/PaperPanel.css";
 import {
-  GhostHighlight,
-  Highlight,
   PdfHighlighter,
   PdfHighlighterUtils,
   PdfLoader,
-  Tip,
-  ViewportHighlight,
 } from "react-pdf-highlighter-extended";
 
-import HighlightContainer, { ReadHighlight } from "../components/paper-components/HighlightContainer";
+import HighlightContainer from "../components/paper-components/HighlightContainer";
 import Sidebar from "../components/paper-components/Sidebar";
-import { PaperContext, PaperContextProvider } from "../contexts/PaperContext";
-import CommentForm from "../components/paper-components/CommentForm";
+import { PaperContext } from "../contexts/PaperContext";
 import ExpandableTip from "../components/paper-components/ExpandableTip";
 import { ArrowForward, UploadFile } from "@mui/icons-material";
 
@@ -55,7 +50,6 @@ function PaperPanel() {
     addHighlight,
     resetHighlights,
     selectedHighlightId,
-    setSelectedHighlightId,
     currentReadId,
     readRecords,
     displayedReads,
