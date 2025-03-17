@@ -111,7 +111,7 @@ function NodeEditor() {
         <TextField
           id="label"
           variant="outlined"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", textTransform: "none" }}
           value={label}
           onChange={(e) => {
             setEdited(true);
@@ -132,7 +132,7 @@ function NodeEditor() {
         <TextField
           id="notes"
           variant="outlined"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", textTransform: "none" }}
           value={notes}
           onChange={(e) => {
             setEdited(true);

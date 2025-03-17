@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import logo from "../../assets/re-ad-logo.png";
+import logo from "../../assets/re-ad-logo.svg";
 
 import Joyride, { Step, CallBackProps, STATUS } from "react-joyride";
 import { useTour } from "../../contexts/TourContext";
@@ -79,8 +79,7 @@ export default function NavBar() {
         </div>
       )}
       <div className="logo-text">
-        <img src={logo} height={40} />
-        <h3>e:ad</h3>
+        <img src={logo} height={40} alt="re:ad" />
       </div>
 
       <Box className="highlights" sx={{ mx: 2 }}>
