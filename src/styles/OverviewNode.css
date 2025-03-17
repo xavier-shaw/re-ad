@@ -1,7 +1,8 @@
 .overview-node {
-    background-color: lightgray;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    color: black;
+  background-color: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: black;
+  text-transform: none !important;
 }
