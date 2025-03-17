@@ -1,4 +1,5 @@
 .highlight-node {
+  max-width: 130px;
   background-color: lightgray;
   padding: 5px;
   border-radius: 5px;

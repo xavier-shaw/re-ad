@@ -11,7 +11,7 @@ interface ExpandableTipProps {
   color: string;
 }
 
-const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
+const ExpandableTip = ({ addHighlight, color }: ExpandableTipProps) => {
   const selectionRef = useRef<PdfSelection | null>(null);
 
   const {
@@ -24,6 +24,11 @@ const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
     <div className="Tip">
         <button
           className="Tip__compact"
+          // style={{ 
+          //   border: `3px solid black`,
+          //   backgroundColor: "whitesmoke",
+          //   color: color
+          // }}
           onClick={() => {
             selectionRef.current = getCurrentSelection();
             addHighlight(

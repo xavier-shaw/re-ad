@@ -49,6 +49,7 @@ function PaperPanel() {
     addHighlight,
     resetHighlights,
     selectedHighlightId,
+    setSelectedHighlightId,
     currentReadId,
     readRecords,
     displayedReads,
@@ -215,7 +216,7 @@ function PaperPanel() {
                   highlights={highlights}
                   textSelectionColor={readRecords[currentReadId]?.color}
                 >
-                  <HighlightContainer readRecords={readRecords} displayedReads={displayedReads} />
+                  <HighlightContainer setSelectedHighlightId={setSelectedHighlightId} readRecords={readRecords} displayedReads={displayedReads} />
                 </PdfHighlighter>
               )}
             </PdfLoader>
