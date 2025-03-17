@@ -92,15 +92,14 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         label: truncatedText,
         content: highlight.content.text,
       };
-    }
-    else if (highlight.type === "area") {
+    } else if (highlight.type === "area") {
       return {
         type: highlight.type,
         label: "Image",
         content: highlight.content.image,
       };
     }
-  }
+  };
 
   const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight, highlights);
@@ -130,7 +129,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
           // user notes
           summary: "",
           references: [],
-          notes: "Write your notes here...",
+          notes: "",
         },
         position: {
           x: isFirstHighlight
