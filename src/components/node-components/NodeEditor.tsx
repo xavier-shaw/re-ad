@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import "../../styles/NodeEditor.css";
 // import References from "./References";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, IconButton, TextField } from "@mui/material";
 import { PaperContext } from "../../contexts/PaperContext";
 import { Close } from "@mui/icons-material";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -22,7 +22,7 @@ function NodeEditor() {
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { nodes, updateNodeData, deleteHighlight, selectedHighlightId, setSelectedHighlightId } = paperContext;
+  const { nodes, updateNodeData, deleteHighlight, selectedHighlightId, setSelectedHighlightId, setOnSelectNode } = paperContext;
 
   const [label, setLabel] = useState<string>("");
   const [summary, setSummary] = useState<string>("");
@@ -71,12 +71,14 @@ function NodeEditor() {
   const handleSave = () => {
     updateNodeData(selectedHighlightId as string, { label, summary, notes });
     setSelectedHighlightId(null);
+    setOnSelectNode(false);
   };
 
   const handleClose = () => {
     setClosing(true);
     if (!edited) {
       setSelectedHighlightId(null);
+      setOnSelectNode(false);
     }
   };
 

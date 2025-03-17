@@ -31,6 +31,8 @@ type PaperContextData = {
   setEdges: (edges: Array<Edge>) => void;
   onEdgesChange: OnEdgesChange;
   onConnect: (connection: Connection) => void;
+  onSelectNode: boolean;
+  setOnSelectNode: (onSelectNode: boolean) => void;
   // Shared
   readRecords: Record<string, ReadRecord>;
   isAddingNewRead: boolean;
@@ -69,6 +71,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   // Graph
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
+  const [onSelectNode, setOnSelectNode] = useState<boolean>(false);
   const NODE_OFFSET_X = 150;
   const NODE_OFFSET_Y = 150;
 
@@ -230,6 +233,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         setEdges,
         onEdgesChange,
         onConnect,
+        onSelectNode,
+        setOnSelectNode,
         // Shared
         readRecords,
         isAddingNewRead,

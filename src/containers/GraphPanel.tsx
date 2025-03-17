@@ -42,6 +42,7 @@ function Flow(props: any) {
     onConnect,
     selectedHighlightId,
     setSelectedHighlightId,
+    setOnSelectNode
   } = props;
   const [isOverview, setIsOverview] = useState(false);
 
@@ -54,8 +55,10 @@ function Flow(props: any) {
 
     if (selectedHighlightId === node.id) {
       setSelectedHighlightId(null);
+      setOnSelectNode(false);
     } else {
       setSelectedHighlightId(node.id);
+      setOnSelectNode(true);
     }
   };
 
@@ -116,6 +119,7 @@ function Flow(props: any) {
 
   useEffect(() => {
     if (nodes.length > 0) {
+      console.log("layouting");
       onLayout("TB");
     }
   }, [nodes.length]);
@@ -160,6 +164,7 @@ export default function GraphPanel() {
     onConnect,
     selectedHighlightId,
     setSelectedHighlightId,
+    setOnSelectNode
   } = paperContext;
 
   return (
@@ -176,6 +181,7 @@ export default function GraphPanel() {
           onConnect={onConnect}
           selectedHighlightId={selectedHighlightId}
           setSelectedHighlightId={setSelectedHighlightId}
+          setOnSelectNode={setOnSelectNode}
         />
       </ReactFlowProvider>
 

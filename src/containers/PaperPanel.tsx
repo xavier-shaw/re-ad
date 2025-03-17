@@ -35,7 +35,6 @@ function PaperPanel() {
       target: '.start-highlight',
       content: 'Each highlight you make will create a node corresponding to that node and the current read you are on. With this node, you are able to link them to other nodes, generate summaries & definitions, as well as take your own notes.',
       placementBeacon: 'top',
-      
     },
   ];
 
@@ -53,49 +52,29 @@ function PaperPanel() {
     currentReadId,
     readRecords,
     displayedReads,
+    onSelectNode
   } = paperContext;
-
-  const parseIdFromHash = () => document.location.hash.slice("#highlight-".length);
-
-  const resetHash = () => {
-    document.location.hash = "";
-  };
-
-  // const PRIMARY_PDF_URL = "https://arxiv.org/pdf/1708.08021";
-  // const searchParams = new URLSearchParams(document.location.search);
-  // const initialUrl = searchParams.get("url") || PRIMARY_PDF_URL;
 
   // Refs for PdfHighlighter utilities
   const highlighterUtilsRef = useRef<PdfHighlighterUtils>(null);
 
   // Scroll to highlight based on hash in the URL
-  const scrollToHighlightFromHash = () => {
-    const highlight = getHighlightById(parseIdFromHash());
+  const scrollToHighlightOnSelect = () => {
+    const highlight = getHighlightById(selectedHighlightId as string);
 
     if (highlight && highlighterUtilsRef.current) {
+      console.log("sceroll to highlight", highlight);
       highlighterUtilsRef.current.scrollToHighlight(highlight);
     }
   };
 
-  // Hash listeners for autoscrolling to highlights
   useEffect(() => {
-    window.addEventListener("hashchange", scrollToHighlightFromHash);
-
-    return () => {
-      window.removeEventListener("hashchange", scrollToHighlightFromHash);
-    };
-  }, [scrollToHighlightFromHash]);
-
-  // useEffect(() => {
-  //     window.addEventListener("hashchange", scrollToHighlight, false);
-  //     return () => {
-  //         window.removeEventListener(
-  //             "hashchange",
-  //             scrollToHighlight,
-  //             false,
-  //         );
-  //     };
-  // }, [scrollToHighlight]);
+    console.log("onSelectNode", onSelectNode);
+    console.log("selectedHighlightId", selectedHighlightId);
+    if (selectedHighlightId && onSelectNode) {
+      scrollToHighlightOnSelect();
+    }
+  }, [onSelectNode, selectedHighlightId]);
 
   const getHighlightById = (id: string) => {
     return highlights.find((highlight) => highlight.id === id);
@@ -222,7 +201,6 @@ function PaperPanel() {
                   
                   enableAreaSelection={(event) => event.altKey}
                   pdfDocument={pdfDocument}
-                  onScrollAway={resetHash}
                   utilsRef={(_pdfHighlighterUtils) => {
                     highlighterUtilsRef.current = _pdfHighlighterUtils;
                   }}
