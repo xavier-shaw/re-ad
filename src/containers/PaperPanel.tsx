@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Box, Button, IconButton } from "@mui/material";
-import ArrowBack from "@mui/icons-material/ArrowBack";
+import { Box, Button } from "@mui/material";
 import "../styles/PaperPanel.css";
 import {
   PdfHighlighter,
@@ -11,7 +10,7 @@ import HighlightContainer from "../components/paper-components/HighlightContaine
 import Sidebar from "../components/paper-components/Sidebar";
 import { PaperContext } from "../contexts/PaperContext";
 import ExpandableTip from "../components/paper-components/ExpandableTip";
-import { ArrowForward, UploadFile } from "@mui/icons-material";
+import { ArrowBack, UploadFile } from "@mui/icons-material";
 import { TourContext } from "../contexts/TourContext";
 
 function PaperPanel() {
@@ -119,47 +118,14 @@ function PaperPanel() {
         :
         <>
           {sideBarOpen && <Sidebar highlights={highlights} resetHighlights={resetHighlights} />}
-          {sideBarOpen && (
-            <IconButton
-              sx={{
-                position: "absolute",
-                left: "calc(15% - 10px)", // Adjust based on your left panel width
-                top: "50%",
-                transform: "translateY(-50%)",
-                backgroundColor: "white",
-                "&:hover": { backgroundColor: "#f0f0f0" },
-                boxShadow: 2,
-                zIndex: 1000,
-                width: "24px",
-                height: "48px",
-                borderRadius: "0 4px 4px 0",
-              }}
+          {sideBarOpen &&
+            <Button
+              className="side-bar-button"
               onClick={() => setSideBarOpen(false)}
             >
               <ArrowBack />
-            </IconButton>
-          )}
-          {!sideBarOpen && (
-            <IconButton
-              sx={{
-                position: "fixed",
-                left: "0",
-                top: "50%",
-                transform: "translateY(-50%)",
-                backgroundColor: "white",
-                "&:hover": { backgroundColor: "#f0f0f0" },
-                boxShadow: 2,
-                zIndex: 1000,
-                width: "24px",
-                height: "48px",
-                borderRadius: "0 4px 4px 0",
-              }}
-              onClick={() => setSideBarOpen(true)}
-            >
-              <ArrowForward />
-            </IconButton>
-          )}
-
+            </Button>
+          }
           <div
             style={{
               height: "100%",

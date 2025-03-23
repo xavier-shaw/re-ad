@@ -119,7 +119,6 @@ function NodeEditor() {
             setEdited(true);
             setLabel(e.target.value);
           }}
-          autoFocus
         />
       </Box>
       <Box className="field summary-container">
@@ -140,7 +139,6 @@ function NodeEditor() {
             setEdited(true);
             setNotes(e.target.value);
           }}
-          autoFocus
           multiline
           placeholder="Write your notes here..."
         />
