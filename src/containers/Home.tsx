@@ -42,7 +42,7 @@ export const Home = () => {
     const links = [
         {
             name: "GitHub",
-            url: "https://github.com/ollie-pai/re-ad"
+            url: "https://github.com/olliepai/re-ad"
         },
         {
             name: "Blog",
@@ -50,7 +50,7 @@ export const Home = () => {
         },
         {
             name: "Try re:ad",
-            url: "/#/paper-reader"
+            url: "./#/paper-reader"
         }
     ]
 

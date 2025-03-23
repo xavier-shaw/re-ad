@@ -13,7 +13,7 @@ import {
 import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import logo from "/re-ad-logo.svg";
-import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
+import Joyride, { CallBackProps, STATUS } from "react-joyride";
 import { TourContext } from "../../contexts/TourContext";
 
 export default function NavBar() {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
-import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
+import Joyride, { CallBackProps, STATUS } from "react-joyride";
 
 import "../styles/PaperPanel.css";
 import {
