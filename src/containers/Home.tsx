@@ -56,8 +56,8 @@ export const Home = () => {
 
     return (
         <Box className="home">
-            <Box className="title-block" sx={{ p: 2, gap: 2 }}>
-                <img src={logo} alt="logo" style={{ width: "250px" }} />
+            <Box className="title-block" sx={{ p: 2, gap: 3 }}>
+                <img src={logo} alt="logo" style={{ width: "300px" }} />
                 <Typography variant="h3" sx={{ textAlign: "center", fontWeight: "bold" }}>
                     {title}
                 </Typography>

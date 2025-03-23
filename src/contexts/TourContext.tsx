@@ -1,12 +1,13 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import { Step } from "react-joyride";
 
 type TourContextType = {
-  navBarRun: boolean;
-  setNavBarRun: React.Dispatch<React.SetStateAction<boolean>>;
-  paperPanelRun: boolean;
-  setPaperPanelRun: React.Dispatch<React.SetStateAction<boolean>>;
+  runTour: boolean;
+  setRunTour: React.Dispatch<React.SetStateAction<boolean>>;
   steps: Step[];
+  setSteps: React.Dispatch<React.SetStateAction<Step[]>>;
+  stepIndex: number;
+  setStepIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const STEPS: Step[] = [
@@ -15,67 +16,50 @@ const STEPS: Step[] = [
     content: 'Get started by uploading your first PDF!',
     placement: 'bottom',
     data: {
-      show: "paper"
+      pause: true
     }
   },
   {
-    target: '.start-highlight',
-    content: 'Get started by highlighting your first highlight! You can also hold option and take a screenshot as a highlight',
-    placement: 'right',
-    data: {
-      show: "paper"
-    }
-  },
-  {
-    target: '.start-highlight',
-    content: 'Each highlight you make will create a node corresponding to that node and the current read you are on. With this node, you are able to link them to other nodes, generate summaries & definitions, as well as take your own notes.',
-    placement: 'right',
-    data: {
-      show: "paper"
-    }
-  },
-  {
-    target: ".setting-up-first-read",
+    target: ".add-new-read-btn",
     content: "Get started with setting up your first read here! Different reads should be mapped to different intentions.",
     placement: "bottom",
     data: {
-      show: "navbar"
+      pause: true
     }
   },
   {
     target: ".active-read",
     content: "You can see what read you are currently on. Any highlight will be associated with the selected read. Use this to also toggle between your reads.",
     placement: "left-end",
-    data: {
-      show: "navbar"
-    }
+  },
+  {
+    target: '.pdf-container',
+    content: 'Get started by highlighting your first highlight! You can also hold option and take a screenshot as a highlight',
+    placement: 'right'
+  },
+  {
+    target: '.pdf-container',
+    content: 'Each highlight you make will create a node corresponding to that node and the current read you are on. With this node, you are able to link them to other nodes, generate summaries & definitions, as well as take your own notes.',
+    placement: 'right',
   },
 ];
 
 export const TourContext = createContext<TourContextType | null>(null);
 
 export const TourProvider = ({ children }: { children: React.ReactNode }) => {
-  const [paperPanelRun, setPaperPanelRun] = useState<boolean>(true);
-  const [navBarRun, setNavBarRun] = useState<boolean>(false);
-  const [steps, setSteps] = useState<Step[]>([]);
-
-  useEffect(() => {
-    if (paperPanelRun) {
-      setSteps(STEPS.filter(step => step.data?.show === "paper"));
-    } 
-    else if (navBarRun) {
-      setSteps(STEPS.filter(step => step.data?.show === "navbar"));
-    }
-  }, [paperPanelRun, navBarRun]);
+  const [runTour, setRunTour] = useState<boolean>(true);
+  const [steps, setSteps] = useState<Step[]>(STEPS);
+  const [stepIndex, setStepIndex] = useState<number>(0);
 
   return (
     <TourContext.Provider
       value={{
-        navBarRun,
-        setNavBarRun,
-        paperPanelRun,
-        setPaperPanelRun,
-        steps
+        runTour,
+        setRunTour,
+        steps,
+        setSteps,
+        stepIndex,
+        setStepIndex,
       }}>
       {children}
     </TourContext.Provider>

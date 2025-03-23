@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
-import Joyride, { CallBackProps, STATUS } from "react-joyride";
-
 import "../styles/PaperPanel.css";
 import {
   PdfHighlighter,
   PdfHighlighterUtils,
   PdfLoader,
 } from "react-pdf-highlighter-extended";
-
 import HighlightContainer from "../components/paper-components/HighlightContainer";
 import Sidebar from "../components/paper-components/Sidebar";
 import { PaperContext } from "../contexts/PaperContext";
@@ -40,7 +37,7 @@ function PaperPanel() {
   if (!tourContext) {
     throw new Error("TourContext not found");
   }
-  const { paperPanelRun, setPaperPanelRun, setNavBarRun, steps } = tourContext;
+  const { setRunTour } = tourContext;
 
   const [sideBarOpen, setSideBarOpen] = useState(false);
 
@@ -81,32 +78,14 @@ function PaperPanel() {
         setPaperUrl(e.target?.result as string);
       };
       reader.readAsDataURL(file);
-
-      setPaperPanelRun(false)
-      setNavBarRun(true)
+      setRunTour(true)
     } else {
       alert("Please upload a valid PDF file.");
     }
   };
 
-  const handleTourCallback = (data: CallBackProps) => {
-    console.log("called handleTourCallback!!!")
-    if ((data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED)) {
-      // setRun(true);
-    }
-  }
-
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
-      <Joyride
-        continuous={true}
-        steps={steps}
-        run={paperPanelRun}
-        callback={handleTourCallback}
-        hideCloseButton={true}
-        disableOverlayClose={true}
-      />
-
       {!paperUrl ?
         <Box sx={{
           width: "100%",
@@ -187,7 +166,7 @@ function PaperPanel() {
               width: sideBarOpen ? "calc(75%)" : "100%",
               position: "relative",
             }}
-            className="pdf start-highlight"
+            className="pdf pdf-container"
           >
             <PdfLoader document={paperUrl}>
               {(pdfDocument) => (

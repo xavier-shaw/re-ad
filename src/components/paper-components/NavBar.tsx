@@ -36,7 +36,6 @@ export default function NavBar() {
   if (!tourContext) {
     throw new Error("TourContext not found");
   }
-  const { setNavBarRun, setPaperPanelRun, navBarRun, steps } = tourContext;
 
   const handleAddRead = () => {
     if (!paperUrl) {
@@ -47,22 +46,8 @@ export default function NavBar() {
     setIsAddingNewRead(true);
   };
 
-  const handleTourCallback = (data: CallBackProps) => {
-    console.log(navBarRun);
-
-    if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
-      // setRun(true);
-      setNavBarRun(false);
-      setPaperPanelRun(true);
-    }
-  };
-
   return (
     <div className="NavBar">
-      <div style={{ display: "none" }}>
-        <Joyride continuous={true} steps={steps} run={navBarRun} callback={handleTourCallback} />
-      </div>
-
       <div className="logo-text">
         <img src={logo} height={40} alt="re:ad" />
       </div>
@@ -105,9 +90,9 @@ export default function NavBar() {
             <Add />
           </IconButton>
         ) : (
-          <Button className="mui-button" size="small" variant="text" startIcon={<Add />} onClick={handleAddRead}>
+          <Button className="mui-button add-new-read-btn" size="small" variant="text" startIcon={<Add />} onClick={handleAddRead}>
             {/* for some ungodly reason this text refuses to be centered so this will do */}
-            <span className="setting-up-first-read" style={{ lineHeight: 0 }}>
+            <span style={{ lineHeight: 0 }}>
               new read
             </span>
           </Button>

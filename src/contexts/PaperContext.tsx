@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { GhostHighlight } from "react-pdf-highlighter-extended";
 import {
   type Node,
@@ -13,6 +13,7 @@ import {
 } from "@xyflow/react";
 import { ReadHighlight } from "../components/paper-components/HighlightContainer";
 import { NodeData } from "../components/node-components/NodeEditor";
+import { TourContext } from "./TourContext";
 
 type PaperContextData = {
   // Paper
@@ -56,6 +57,12 @@ type ReadRecord = {
 };
 
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const tourContext = useContext(TourContext);
+  if (!tourContext) {
+    throw new Error("TourContext not found");
+  }
+  const { setRunTour } = tourContext;
+  
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<Array<ReadHighlight>>([]);
@@ -204,6 +211,13 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     }));
     setCurrentReadId(newReadId);
     showRead(newReadId);
+
+    // Start the tour when adding first read
+    if (newReadId === "0") {
+      if (Object.keys(readRecords).length === 0) {
+        setRunTour(true);
+      }
+    }
   };
 
   const hideRead = (readId: string) => {

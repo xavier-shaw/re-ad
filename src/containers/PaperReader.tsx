@@ -5,13 +5,20 @@ import { Box, DialogTitle, TextField, Dialog, DialogContent, Button, DialogActio
 import "../styles/PaperReader.css";
 import { PaperContext } from "../contexts/PaperContext";
 import { useContext, useState } from "react";
-
+import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from "react-joyride";
+import { TourContext } from "../contexts/TourContext";
 export const PaperReader = () => {
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
   const { isAddingNewRead, setIsAddingNewRead, createRead } = paperContext;
+
+  const tourContext = useContext(TourContext);
+  if (!tourContext) {
+    throw new Error("TourContext not found");
+  }
+  const { setRunTour, runTour, steps, stepIndex, setStepIndex } = tourContext;
 
   const [title, setTitle] = useState<string | null>("");
   const [color, setColor] = useState<string | null>(null);
@@ -37,6 +44,20 @@ export const PaperReader = () => {
     setIsAddingNewRead(false);
   };
 
+  const handleTourCallback = (data: CallBackProps) => {
+    const { action, index, status, type, step } = data;
+
+    if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type as any)) {
+      setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
+      if (step.data?.pause) {
+        setRunTour(false);
+      }
+    } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+      setStepIndex(0);
+      setRunTour(false);
+    }
+  };
+
   const colorPalette = [
     "#FFADAD",
     "#FFD6A5",
@@ -50,6 +71,17 @@ export const PaperReader = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "100vw", height: "100vh" }}>
+      <div style={{ display: "none" }}>
+        <Joyride
+          continuous={true}
+          steps={steps}
+          run={runTour}
+          callback={handleTourCallback}
+          hideCloseButton={true}
+          disableOverlayClose={true}
+          stepIndex={stepIndex}
+        />
+      </div>
       <Box sx={{ height: "8%", width: "100%", display: "flex" }}>
         <NavBar />
       </Box>
