@@ -1,7 +1,6 @@
 body {
   margin: 0;
   font-family: Roboto, sans-serif !important;
-  text-transform: lowercase;
   background-color: #ffffff;
   color: #fff;
 }
@@ -20,13 +19,14 @@ button {
   color: black;
   font-size: 16px;
   font-weight: 500;
-  text-transform: lowercase !important;
   font-family: Roboto !important;
   background: none;
   border: none;
+  text-transform: none !important;
 }
 
 .mui-button {
   color: black !important;
   font-size: 16px !important;
+  text-transform: none !important;
 }

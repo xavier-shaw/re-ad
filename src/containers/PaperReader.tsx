@@ -4,9 +4,7 @@ import GraphPanel from "./GraphPanel";
 import { Box, DialogTitle, TextField, Dialog, DialogContent, Button, DialogActions } from "@mui/material";
 import "../styles/PaperReader.css";
 import { PaperContext } from "../contexts/PaperContext";
-import { TourProvider } from "../contexts/TourContext";
-import { useContext, useRef, useState } from "react";
-import { Add } from "@mui/icons-material";
+import { useContext, useState } from "react";
 
 export const PaperReader = () => {
   const paperContext = useContext(PaperContext);
@@ -51,7 +49,6 @@ export const PaperReader = () => {
   ];
 
   return (
-    <TourProvider>
     <Box sx={{ display: "flex", flexDirection: "column", width: "100vw", height: "100vh" }}>
       <Box sx={{ height: "8%", width: "100%", display: "flex" }}>
         <NavBar />
@@ -126,6 +123,5 @@ export const PaperReader = () => {
         </DialogActions>
       </Dialog>
     </Box>
-    </TourProvider>
   );
 };

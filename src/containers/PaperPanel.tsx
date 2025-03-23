@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
-import { useTour } from "../contexts/TourContext";
-
 
 import "../styles/PaperPanel.css";
 import {
@@ -17,27 +15,9 @@ import Sidebar from "../components/paper-components/Sidebar";
 import { PaperContext } from "../contexts/PaperContext";
 import ExpandableTip from "../components/paper-components/ExpandableTip";
 import { ArrowForward, UploadFile } from "@mui/icons-material";
+import { TourContext } from "../contexts/TourContext";
 
 function PaperPanel() {
-
-  const steps = [
-    {
-      target: '.upload-pdf',
-      content: 'Get started by uploading your first PDF!',
-    },
-    {
-      target: '.start-highlight',
-      content: 'Get started by highlighting your first highlight! You can also hold option and take a screenshot as a highlight',
-      placementBeacon: 'top',
-
-    },
-    {
-      target: '.start-highlight',
-      content: 'Each highlight you make will create a node corresponding to that node and the current read you are on. With this node, you are able to link them to other nodes, generate summaries & definitions, as well as take your own notes.',
-      placementBeacon: 'top',
-    },
-  ];
-
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
@@ -55,6 +35,14 @@ function PaperPanel() {
     displayedReads,
     onSelectNode
   } = paperContext;
+
+  const tourContext = useContext(TourContext);
+  if (!tourContext) {
+    throw new Error("TourContext not found");
+  }
+  const { paperPanelRun, setPaperPanelRun, setNavBarRun, steps } = tourContext;
+
+  const [sideBarOpen, setSideBarOpen] = useState(false);
 
   // Refs for PdfHighlighter utilities
   const highlighterUtilsRef = useRef<PdfHighlighterUtils>(null);
@@ -85,10 +73,6 @@ function PaperPanel() {
     console.log("selectedHighlightId", selectedHighlightId);
   }, [selectedHighlightId]);
 
-  const [sideBarOpen, setSideBarOpen] = useState(false);
-
-  const { paperPanelRun, setPaperPanelRun, setNavBarRun } = useTour();
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
@@ -97,9 +81,9 @@ function PaperPanel() {
         setPaperUrl(e.target?.result as string);
       };
       reader.readAsDataURL(file);
-      console.log("here")
-      setNavBarRun(true)
+
       setPaperPanelRun(false)
+      setNavBarRun(true)
     } else {
       alert("Please upload a valid PDF file.");
     }
@@ -109,11 +93,20 @@ function PaperPanel() {
     console.log("called handleTourCallback!!!")
     if ((data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED)) {
       // setRun(true);
+    }
   }
-}
+
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
-      {paperPanelRun && <Joyride continuous steps={steps} run={paperPanelRun} callback={handleTourCallback} />}
+      <Joyride
+        continuous={true}
+        steps={steps}
+        run={paperPanelRun}
+        callback={handleTourCallback}
+        hideCloseButton={true}
+        disableOverlayClose={true}
+      />
+
       {!paperUrl ?
         <Box sx={{
           width: "100%",
@@ -135,7 +128,7 @@ function PaperPanel() {
           {/* Button to Trigger File Upload */}
           <label htmlFor="pdf-upload">
             <Button
-            className="upload-pdf"
+              className="upload-pdf"
               variant="outlined"
               component="span"
               startIcon={<UploadFile />}
@@ -199,18 +192,14 @@ function PaperPanel() {
             <PdfLoader document={paperUrl}>
               {(pdfDocument) => (
                 <PdfHighlighter
-                  
                   enableAreaSelection={(event) => event.altKey}
                   pdfDocument={pdfDocument}
                   utilsRef={(_pdfHighlighterUtils) => {
                     highlighterUtilsRef.current = _pdfHighlighterUtils;
                   }}
-                  // pdfScaleValue={pdfScaleValue}
-                  // textSelectionColor={undefined}
-                  // onSelection={undefined}
                   selectionTip={
                     Object.keys(readRecords).length > 0 ? (
-                      <ExpandableTip addHighlight={addHighlight} color={readRecords[currentReadId]?.color} />
+                      <ExpandableTip addHighlight={addHighlight} />
                     ) : null
                   }
                   highlights={highlights}

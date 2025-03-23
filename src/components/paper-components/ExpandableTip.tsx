@@ -8,10 +8,9 @@ import "../../styles/ExpandableTip.css";
 
 interface ExpandableTipProps {
   addHighlight: (highlight: GhostHighlight) => void;
-  color: string;
 }
 
-const ExpandableTip = ({ addHighlight, color }: ExpandableTipProps) => {
+const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {
   const selectionRef = useRef<PdfSelection | null>(null);
 
   const {
@@ -24,11 +23,6 @@ const ExpandableTip = ({ addHighlight, color }: ExpandableTipProps) => {
     <div className="Tip">
         <button
           className="Tip__compact"
-          // style={{ 
-          //   border: `3px solid black`,
-          //   backgroundColor: "whitesmoke",
-          //   color: color
-          // }}
           onClick={() => {
             selectionRef.current = getCurrentSelection();
             addHighlight(
