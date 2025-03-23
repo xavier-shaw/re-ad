@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { GhostHighlight } from "react-pdf-highlighter-extended";
 import {
   type Node,
@@ -13,6 +13,7 @@ import {
 } from "@xyflow/react";
 import { ReadHighlight } from "../components/paper-components/HighlightContainer";
 import { NodeData } from "../components/node-components/NodeEditor";
+import { TourContext } from "./TourContext";
 
 type PaperContextData = {
   // Paper
@@ -31,6 +32,8 @@ type PaperContextData = {
   setEdges: (edges: Array<Edge>) => void;
   onEdgesChange: OnEdgesChange;
   onConnect: (connection: Connection) => void;
+  onSelectNode: boolean;
+  setOnSelectNode: (onSelectNode: boolean) => void;
   // Shared
   readRecords: Record<string, ReadRecord>;
   isAddingNewRead: boolean;
@@ -54,6 +57,12 @@ type ReadRecord = {
 };
 
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const tourContext = useContext(TourContext);
+  if (!tourContext) {
+    throw new Error("TourContext not found");
+  }
+  const { setRunTour } = tourContext;
+  
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<Array<ReadHighlight>>([]);
@@ -69,6 +78,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   // Graph
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
+  const [onSelectNode, setOnSelectNode] = useState<boolean>(false);
   const NODE_OFFSET_X = 150;
   const NODE_OFFSET_Y = 150;
 
@@ -201,6 +211,13 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     }));
     setCurrentReadId(newReadId);
     showRead(newReadId);
+
+    // Start the tour when adding first read
+    if (newReadId === "0") {
+      if (Object.keys(readRecords).length === 0) {
+        setRunTour(true);
+      }
+    }
   };
 
   const hideRead = (readId: string) => {
@@ -230,6 +247,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         setEdges,
         onEdgesChange,
         onConnect,
+        onSelectNode,
+        setOnSelectNode,
         // Shared
         readRecords,
         isAddingNewRead,

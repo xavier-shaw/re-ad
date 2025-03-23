@@ -8,7 +8,6 @@ import "../../styles/ExpandableTip.css";
 
 interface ExpandableTipProps {
   addHighlight: (highlight: GhostHighlight) => void;
-  color: string;
 }
 
 const ExpandableTip = ({ addHighlight }: ExpandableTipProps) => {

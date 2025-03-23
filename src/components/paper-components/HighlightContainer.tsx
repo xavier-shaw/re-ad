@@ -14,11 +14,13 @@ export interface ReadHighlight extends Highlight {
 interface HighlightContainerProps {
     readRecords: any;
     displayedReads: Array<string>;
+    setSelectedHighlightId: (id: string | null) => void;
 }
 
 function HighlightContainer({
     readRecords,
     displayedReads,
+    setSelectedHighlightId,
 }: HighlightContainerProps) {
     const {
         highlight,
@@ -37,6 +39,7 @@ function HighlightContainer({
                 style={{
                     background: color,
                 }}
+                onClick={() => setSelectedHighlightId(highlight.id)}
             />
             :
             <AreaHighlight

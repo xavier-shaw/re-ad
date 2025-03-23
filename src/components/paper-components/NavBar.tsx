@@ -12,24 +12,10 @@ import {
 } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import logo from "/re-ad-logo.png";
-import Joyride, { Step, CallBackProps, STATUS } from "react-joyride";
-import { useTour } from "../../contexts/TourContext";
+import logo from "/re-ad-logo.svg";
+import { TourContext } from "../../contexts/TourContext";
 
 export default function NavBar() {
-  const steps = [
-    {
-      target: ".setting-up-first-read",
-      content:
-        "Get started with setting up your first read here! Different reads should be mapped to different intentions.",
-    },
-    {
-      target: ".active-read",
-      content:
-        "You can see what read you are currently on. Any highlight will be associated with the selected read. Use this to also toggle between your reads.",
-    },
-  ];
-
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
@@ -45,6 +31,11 @@ export default function NavBar() {
     showRead,
   } = paperContext;
 
+  const tourContext = useContext(TourContext);
+  if (!tourContext) {
+    throw new Error("TourContext not found");
+  }
+
   const handleAddRead = () => {
     if (!paperUrl) {
       alert("Please upload a paper first");
@@ -54,26 +45,8 @@ export default function NavBar() {
     setIsAddingNewRead(true);
   };
 
-  const { setNavBarRun, setPaperPanelRun, navBarRun } = useTour();
-
-  const handleTourCallback = (data: CallBackProps) => {
-    console.log(navBarRun);
-
-    if (data.status === STATUS.FINISHED || data.status === STATUS.SKIPPED) {
-      // setRun(true);
-      setNavBarRun(false);
-      setPaperPanelRun(true);
-    }
-  };
-
   return (
     <div className="NavBar">
-      {/* <Joyride steps={steps} run={run} /> */}
-      {navBarRun && (
-        <div style={{ display: "none" }}>
-          <Joyride continuous steps={steps} run={navBarRun} callback={handleTourCallback} />
-        </div>
-      )}
       <div className="logo-text">
         <img src={logo} height={40} alt="re:ad" />
       </div>
@@ -116,16 +89,16 @@ export default function NavBar() {
             <Add />
           </IconButton>
         ) : (
-          <Button className="mui-button" size="small" variant="text" startIcon={<Add />} onClick={handleAddRead}>
+          <Button className="mui-button add-new-read-btn" size="small" variant="text" startIcon={<Add />} onClick={handleAddRead}>
             {/* for some ungodly reason this text refuses to be centered so this will do */}
-            <span className="setting-up-first-read" style={{ lineHeight: 0 }}>
-              NEW READ
+            <span style={{ lineHeight: 0 }}>
+              new read
             </span>
           </Button>
         )}
       </Box>
       <Box className="active-read" sx={{ mx: 3, display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
-        <h4>Active Read:</h4>
+        <h4>active read:</h4>
         {Object.values(readRecords).length > 0 ? (
           <div>
             <FormControl size="small" fullWidth>
@@ -154,7 +127,7 @@ export default function NavBar() {
           </div>
         ) : (
           <div>
-            <p>None</p>
+            <p>none</p>
           </div>
         )}
       </Box>

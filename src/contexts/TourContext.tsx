@@ -1,29 +1,67 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useState } from "react";
+import { Step } from "react-joyride";
 
-interface TourContextType {
-    navBarRun: boolean;
-    setNavBarRun: React.Dispatch<React.SetStateAction<boolean>>;
-    paperPanelRun: boolean;
-    setPaperPanelRun: React.Dispatch<React.SetStateAction<boolean>>;
+type TourContextType = {
+  runTour: boolean;
+  setRunTour: React.Dispatch<React.SetStateAction<boolean>>;
+  steps: Step[];
+  setSteps: React.Dispatch<React.SetStateAction<Step[]>>;
+  stepIndex: number;
+  setStepIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const TourContext = createContext<TourContextType | undefined>(undefined);
+const STEPS: Step[] = [
+  {
+    target: '.upload-pdf',
+    content: 'Get started by uploading your first PDF!',
+    placement: 'bottom',
+    data: {
+      pause: true
+    }
+  },
+  {
+    target: ".add-new-read-btn",
+    content: "Get started with setting up your first read here! Different reads should be mapped to different intentions.",
+    placement: "bottom",
+    data: {
+      pause: true
+    }
+  },
+  {
+    target: ".active-read",
+    content: "You can see what read you are currently on. Any highlight will be associated with the selected read. Use this to also toggle between your reads.",
+    placement: "left-end",
+  },
+  {
+    target: '.pdf-container',
+    content: 'Get started by highlighting your first highlight! You can also hold option and take a screenshot as a highlight',
+    placement: 'right'
+  },
+  {
+    target: '.pdf-container',
+    content: 'Each highlight you make will create a node corresponding to that node and the current read you are on. With this node, you are able to link them to other nodes, generate summaries & definitions, as well as take your own notes.',
+    placement: 'right',
+  },
+];
 
-export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [paperPanelRun, setPaperPanelRun] = useState<boolean>(true);
-    const [navBarRun, setNavBarRun] = useState<boolean>(false);
+export const TourContext = createContext<TourContextType | null>(null);
+
+export const TourProvider = ({ children }: { children: React.ReactNode }) => {
+  const [runTour, setRunTour] = useState<boolean>(true);
+  const [steps, setSteps] = useState<Step[]>(STEPS);
+  const [stepIndex, setStepIndex] = useState<number>(0);
 
   return (
-    <TourContext.Provider value={{ navBarRun, setNavBarRun, paperPanelRun, setPaperPanelRun }}>
+    <TourContext.Provider
+      value={{
+        runTour,
+        setRunTour,
+        steps,
+        setSteps,
+        stepIndex,
+        setStepIndex,
+      }}>
       {children}
     </TourContext.Provider>
   );
-};
-
-export const useTour = () => {
-  const context = useContext(TourContext);
-  if (!context) {
-    throw new Error("useTour must be used within a TourProvider");
-  }
-  return context;
 };

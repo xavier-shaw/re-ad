@@ -42,6 +42,7 @@ function Flow(props: any) {
     onConnect,
     selectedHighlightId,
     setSelectedHighlightId,
+    setOnSelectNode
   } = props;
   const [isOverview, setIsOverview] = useState(false);
 
@@ -54,8 +55,10 @@ function Flow(props: any) {
 
     if (selectedHighlightId === node.id) {
       setSelectedHighlightId(null);
+      setOnSelectNode(false);
     } else {
       setSelectedHighlightId(node.id);
+      setOnSelectNode(true);
     }
   };
 
@@ -103,22 +106,27 @@ function Flow(props: any) {
   };
 
   const onLayout = useCallback((direction: string) => {
-      console.log(nodes);
-      const layouted = getLayoutedElements(nodes, edges, { direction });
+    console.log(nodes);
+    const layouted = getLayoutedElements(nodes, edges, { direction });
 
-      setNodes([...layouted.nodes]);
-      setEdges([...layouted.edges]);
+    setNodes([...layouted.nodes]);
+    setEdges([...layouted.edges]);
 
-      window.requestAnimationFrame(() => {
-        fitView();
-      });
-    }, [nodes, edges]);
+    window.requestAnimationFrame(() => {
+      fitView();
+    });
+  }, [nodes, edges]);
 
   useEffect(() => {
-    if (nodes.length > 0) {
-      onLayout("TB");
+    if (selectedHighlightId) {
+      console.log("viewport change")
+      const selectedNode = nodes.find((node: any) => node.id === selectedHighlightId);
+      fitView({ padding: 3.5, nodes: [selectedNode] });
     }
-  }, [nodes.length]);
+    else {
+      fitView();
+    }
+  }, [nodes]);
 
   return (
     <ReactFlow
@@ -160,6 +168,7 @@ export default function GraphPanel() {
     onConnect,
     selectedHighlightId,
     setSelectedHighlightId,
+    setOnSelectNode
   } = paperContext;
 
   return (
@@ -176,6 +185,7 @@ export default function GraphPanel() {
           onConnect={onConnect}
           selectedHighlightId={selectedHighlightId}
           setSelectedHighlightId={setSelectedHighlightId}
+          setOnSelectNode={setOnSelectNode}
         />
       </ReactFlowProvider>
 

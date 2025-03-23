@@ -1,6 +1,7 @@
 .NavBar {
   display: flex;
   width: 100%;
+  box-sizing: border-box;
   align-items: center;
   color: black;
   padding: calc(5px + 2rem);

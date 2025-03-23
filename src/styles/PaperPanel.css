@@ -9,3 +9,19 @@
 .highlight.red div {
   background-color: red;
 }
+
+.side-bar-button {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+  box-shadow: 2;
+  z-index: 1000;
+  width: 24px;
+  height: 48px;
+  border-radius: 0 4px 4px 0;
+}
