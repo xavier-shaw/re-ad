@@ -12,6 +12,7 @@ export type NodeData = {
   summary: string;
   references: string[];
   notes: string;
+  type: string;
 };
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -37,6 +38,7 @@ function NodeEditor() {
     if (selectedNode) {
       setLabel(selectedNode.data.label as string);
       const content = selectedNode.data.content as string;
+      const type = selectedNode.data.type as string;
       setSummary(selectedNode.data.summary as string);
       // setReferences(selectedNode.data.references as string[]);
       setNotes(selectedNode.data.notes as string);
@@ -44,24 +46,44 @@ function NodeEditor() {
       setClosing(false);
 
       if (!selectedNode.data.summary) {
-        generateSummary(content);
+        generateSummary(content, type);
       }
     }
   }, [selectedHighlightId]);
 
   // Generate summary from highlighted content
-  const generateSummary = async (content: string) => {
+  const generateSummary = async (content: string, type: string) => {
     if (!content) {
       setSummary("No content to summarize.");
       return;
     }
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
-      const summaryPrompt = `Summarize this in three sentences or less or if it's a single word/phrase give the definition: "${content}"`;
-      const response = await model.generateContent(summaryPrompt);
-      const result = await response.response;
-      setSummary(result.text() || "No summary available.");
+      // Load the Gemini 1.5 Flash model
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      // Summarize text content
+      if (type === "text") {
+        const summaryPrompt = `Summarize this in three sentences or less or if it's a single word/phrase give the definition: "${content}"`;
+        const response = await model.generateContent(summaryPrompt);
+        const result = await response.response;
+        setSummary(result.text() || "No summary available.");
+      
+        // Summarize image content
+      } else if (type === "area") {
+        // For image content, we need to convert the base64 image to a format Gemini can understand
+        const imageData = {
+          inlineData: {
+            data: content.split(',')[1], // remove the data URL prefix
+            mimeType: "image/jpeg"
+          }
+        };
+        
+        const imagePrompt = "Describe this image in detail, focusing on any text, diagrams, or important visual elements:";
+        const response = await model.generateContent([imagePrompt, imageData]);
+        const result = await response.response;
+        setSummary(result.text() || "No description available.");
+      }
     } catch (error) {
       console.error("Error fetching summary:", error);
       setSummary("Failed to fetch summary.");
