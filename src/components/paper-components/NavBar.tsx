@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import logo from "/re-ad-logo.svg";
 import { TourContext } from "../../contexts/TourContext";
 
@@ -35,6 +36,9 @@ export default function NavBar() {
   if (!tourContext) {
     throw new Error("TourContext not found");
   }
+  const {
+    setRunTour,
+  } = tourContext;
 
   const handleAddRead = () => {
     if (!paperUrl) {
@@ -45,10 +49,17 @@ export default function NavBar() {
     setIsAddingNewRead(true);
   };
 
+  const handleStartTour = () => {
+    setRunTour(true);
+  };
+
   return (
     <div className="NavBar">
       <div className="logo-text">
         <img src={logo} height={40} alt="re:ad" />
+        <IconButton sx={{ ml: 3 }} className="mui-button" size="small" onClick={handleStartTour}>
+          <TipsAndUpdatesIcon />
+        </IconButton>
       </div>
 
       <Box className="highlights" sx={{ mx: 2 }}>
