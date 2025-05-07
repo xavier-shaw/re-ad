@@ -41,6 +41,7 @@ type PaperContextData = {
   createRead: (title: string, color: string) => void;
   currentReadId: string;
   setCurrentReadId: (readId: string) => void;
+  currentRead: ReadRecord | null;
   displayedReads: Array<string>;
   hideRead: (readId: string) => void;
   showRead: (readId: string) => void;
@@ -228,6 +229,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setDisplayedReads((prevDisplayedReads) => [...prevDisplayedReads, readId]);
   };
 
+  const currentRead = readRecords[currentReadId] || null;
+
   return (
     <PaperContext.Provider
       value={{
@@ -253,14 +256,15 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         readRecords,
         isAddingNewRead,
         setIsAddingNewRead,
+        createRead,
         currentReadId,
         setCurrentReadId,
-        selectedHighlightId,
-        setSelectedHighlightId,
-        createRead,
+        currentRead,
         displayedReads,
         hideRead,
         showRead,
+        selectedHighlightId,
+        setSelectedHighlightId,
       }}
     >
       {children}

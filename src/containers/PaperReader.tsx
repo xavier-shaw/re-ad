@@ -4,15 +4,19 @@ import GraphPanel from "./GraphPanel";
 import { Box, DialogTitle, TextField, Dialog, DialogContent, Button, DialogActions } from "@mui/material";
 import "../styles/PaperReader.css";
 import { PaperContext } from "../contexts/PaperContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from "react-joyride";
 import { TourContext } from "../contexts/TourContext";
+import Split from 'react-split';
+import { useReadingAnalytics } from "../contexts/ReadingAnalyticsContext";
+import { ReadingAnalytics } from "../components/ReadingAnalytics";
+
 export const PaperReader = () => {
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { isAddingNewRead, setIsAddingNewRead, createRead } = paperContext;
+  const { isAddingNewRead, setIsAddingNewRead, createRead, currentRead } = paperContext;
 
   const tourContext = useContext(TourContext);
   if (!tourContext) {
@@ -20,8 +24,24 @@ export const PaperReader = () => {
   }
   const { setRunTour, runTour, steps, stepIndex, setStepIndex } = tourContext;
 
+  const { startReading, stopReading } = useReadingAnalytics();
+
   const [title, setTitle] = useState<string | null>("");
   const [color, setColor] = useState<string | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+
+  // Start/stop reading tracking when currentRead changes
+  useEffect(() => {
+    if (currentRead) {
+      startReading(currentRead.title);
+    } else {
+      stopReading();
+    }
+
+    return () => {
+      stopReading();
+    };
+  }, [currentRead]);
 
   const handleCreateRead = () => {
     if (!title) {
@@ -83,15 +103,32 @@ export const PaperReader = () => {
         />
       </div>
       <Box sx={{ height: "8%", width: "100%", display: "flex" }}>
-        <NavBar />
+        <NavBar onAnalyticsClick={() => setShowAnalytics(!showAnalytics)} />
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "row", width: "100%", height: "92%" }}>
-        <Box className="panel paper-panel">
-          <PaperPanel />
-        </Box>
-        <Box className="panel graph-panel">
-          <GraphPanel />
-        </Box>
+      <Box sx={{ width: "100%", height: "92%" }}>
+        <Split
+          className="split"
+          sizes={[60, 40]}
+          minSize={200}
+          expandToMin={false}
+          gutterSize={10}
+          gutterAlign="center"
+          snapOffset={30}
+          dragInterval={1}
+          direction="horizontal"
+          cursor="col-resize"
+        >
+          <Box className="panel paper-panel">
+            <PaperPanel />
+          </Box>
+          <Box className="panel graph-panel">
+            {showAnalytics ? (
+              <ReadingAnalytics />
+            ) : (
+              <GraphPanel />
+            )}
+          </Box>
+        </Split>
       </Box>
 
       <Dialog open={isAddingNewRead}>

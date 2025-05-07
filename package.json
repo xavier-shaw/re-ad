@@ -28,6 +28,7 @@
     "react-markdown": "^10.1.0",
     "react-pdf-highlighter-extended": "^8.1.0",
     "react-router-dom": "^7.4.0",
+    "react-split": "^2.0.14",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
