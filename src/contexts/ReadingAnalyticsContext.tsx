@@ -11,9 +11,10 @@ interface ReadingSession {
 interface CategoryAnalytics {
   categoryId: string;
   totalTimeSpent: number; // in milliseconds
-  sessions: number;
+  highlightCount: number;
+  imageHighlightCount: number;
+  textHighlightCount: number;
   lastRead: Date;
-  averageSessionDuration: number;
 }
 
 interface ReadingAnalytics {
@@ -31,6 +32,7 @@ interface ReadingAnalyticsContextType {
   getTotalReadingTime: () => number;
   getMostReadCategory: () => string | null;
   resetAnalytics: () => void;
+  trackHighlight: (categoryId: string, highlightType: 'text' | 'area') => void;
 }
 
 const ReadingAnalyticsContext = createContext<ReadingAnalyticsContextType | undefined>(undefined);
@@ -79,17 +81,19 @@ export const ReadingAnalyticsProvider: React.FC<{ children: React.ReactNode }> =
       const category = prev.categories[categoryId] || {
         categoryId,
         totalTimeSpent: 0,
-        sessions: 0,
+        highlightCount: 0,
+        imageHighlightCount: 0,
+        textHighlightCount: 0,
         lastRead: new Date(),
-        averageSessionDuration: 0,
       };
 
       const updatedCategory = {
         ...category,
         totalTimeSpent: category.totalTimeSpent + duration,
-        sessions: category.sessions + 1,
         lastRead: new Date(),
-        averageSessionDuration: (category.totalTimeSpent + duration) / (category.sessions + 1),
+        highlightCount: category.highlightCount,
+        imageHighlightCount: category.imageHighlightCount,
+        textHighlightCount: category.textHighlightCount,
       };
 
       return {
@@ -123,6 +127,33 @@ export const ReadingAnalyticsProvider: React.FC<{ children: React.ReactNode }> =
   const resetAnalytics = () => {
     setAnalytics(initialAnalytics);
     sessionStorage.removeItem('readingAnalytics');
+  };
+
+  const trackHighlight = (categoryId: string, highlightType: 'text' | 'area') => {
+    setAnalytics(prev => {
+      const category = prev.categories[categoryId] || {
+        categoryId,
+        totalTimeSpent: 0,
+        highlightCount: 0,
+        imageHighlightCount: 0,
+        textHighlightCount: 0,
+        lastRead: new Date(),
+      };
+
+      return {
+        ...prev,
+        categories: {
+          ...prev.categories,
+          [categoryId]: {
+            ...category,
+            highlightCount: category.highlightCount + 1,
+            imageHighlightCount: highlightType === 'area' ? category.imageHighlightCount + 1 : category.imageHighlightCount,
+            textHighlightCount: highlightType === 'text' ? category.textHighlightCount + 1 : category.textHighlightCount,
+          },
+        },
+        lastUpdated: new Date(),
+      };
+    });
   };
 
   // Handle page visibility changes
@@ -161,6 +192,7 @@ export const ReadingAnalyticsProvider: React.FC<{ children: React.ReactNode }> =
         getTotalReadingTime,
         getMostReadCategory,
         resetAnalytics,
+        trackHighlight,
       }}
     >
       {children}

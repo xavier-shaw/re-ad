@@ -16,7 +16,7 @@ export const PaperReader = () => {
   if (!paperContext) {
     throw new Error("PaperContext not found");
   }
-  const { isAddingNewRead, setIsAddingNewRead, createRead, currentRead } = paperContext;
+  const { isAddingNewRead, setIsAddingNewRead, createRead, currentRead, readRecords } = paperContext;
 
   const tourContext = useContext(TourContext);
   if (!tourContext) {
@@ -33,7 +33,7 @@ export const PaperReader = () => {
   // Start/stop reading tracking when currentRead changes
   useEffect(() => {
     if (currentRead) {
-      startReading(currentRead.title);
+      startReading(currentRead.id);
     } else {
       stopReading();
     }
@@ -123,7 +123,7 @@ export const PaperReader = () => {
           </Box>
           <Box className="panel graph-panel">
             {showAnalytics ? (
-              <ReadingAnalytics />
+              <ReadingAnalytics readRecords={readRecords} />
             ) : (
               <GraphPanel />
             )}
