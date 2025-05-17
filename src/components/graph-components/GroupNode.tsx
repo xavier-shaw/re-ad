@@ -1,8 +1,9 @@
 import { Box, Typography } from "@mui/material";
-import { Position, Handle, NodeProps, Node } from "@xyflow/react";
+import { Position, Handle, NodeProps, Node, useConnection } from "@xyflow/react";
 import "../../styles/GraphNode.css";
 import { PaperContext } from "../../contexts/PaperContext";
 import { useContext } from "react";
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 export default function GroupNode({ data }: NodeProps<Node>) {
   const { id, readRecordId, label, type, content, intersected } = data as {
@@ -20,6 +21,8 @@ export default function GroupNode({ data }: NodeProps<Node>) {
   const { readRecords, displayedReads, selectedHighlightId } = paperContext;
   const { color } = readRecords[readRecordId];
   const isDisplayed = displayedReads.includes(readRecordId);
+  const connection = useConnection();
+  const isTarget = connection.inProgress && connection.fromNode.id !== id;
 
   return (
     <Box
@@ -27,12 +30,45 @@ export default function GroupNode({ data }: NodeProps<Node>) {
       id={`node-${id}`}
       sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}
     >
-      <Handle type="target" position={Position.Top} />
+      {!connection.inProgress && (
+        <Handle
+          className="connection-handle"
+          id={`relational-handle-${id}-source`}
+          position={Position.Right}
+          type="source"
+        />
+      )}
+      {(!connection.inProgress || isTarget) && (
+        <Handle
+          className="connection-handle"
+          id={`relational-handle-${id}-target`}
+          position={Position.Left}
+          type="target"
+          isConnectableStart={false}
+        />
+      )}
+
+      <Handle
+        className="connection-handle"
+        id={`chronological-handle-${id}-target`}
+        position={Position.Top}
+        type="target"
+        isConnectableStart={false}
+      />
+      <Handle
+        className="connection-handle"
+        id={`chronological-handle-${id}-source`}
+        position={Position.Bottom}
+        type="source" isConnectableStart={false}
+      />
+
       <Typography variant="body1">{label}</Typography>
+
       {type === "area" &&
         <img src={content} alt="Node Content" style={{ maxWidth: "100%", maxHeight: "100px" }} />
       }
-      <Handle type="source" position={Position.Bottom} />
+
+      <DragIndicatorIcon className="drag-handle__custom" />
     </Box>
   );
 }

@@ -1,6 +1,6 @@
 import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath } from "@xyflow/react";
 
-export default function TemporalEdge({
+export default function ChronologicalEdge({
     sourceX,
     sourceY,
     targetX,

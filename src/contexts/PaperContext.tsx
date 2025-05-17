@@ -35,6 +35,8 @@ type PaperContextData = {
   onSelectNode: boolean;
   setOnSelectNode: (onSelectNode: boolean) => void;
   createGroupNode: (nodeIds: string[]) => void;
+  displayEdgeTypes: Array<string>;
+  setDisplayEdgeTypes: (displayEdgeTypes: Array<string>) => void;
   // Shared
   readRecords: Record<string, ReadRecord>;
   isAddingNewRead: boolean;
@@ -64,8 +66,8 @@ export const NODE_TYPES = {
 }
 
 export const EDGE_TYPES = {
-  TEMPORAL: "temporal",
-  RELATION: "relation",
+  CHRONOLOGICAL: "chronological",
+  RELATIONAL: "relational",
 }
 
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -78,7 +80,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<Array<ReadHighlight>>([]);
-  const [temporalSeq, setTemporalSeq] = useState(0);
+  const [chronologicalSeq, setChronologicalSeq] = useState(0);
 
   // Shared
   const [readRecords, setReadRecords] = useState<Record<string, ReadRecord>>({});
@@ -91,24 +93,33 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
   const [onSelectNode, setOnSelectNode] = useState<boolean>(false);
+  const [displayEdgeTypes, setDisplayEdgeTypes] = useState<Array<string>>([EDGE_TYPES.CHRONOLOGICAL, EDGE_TYPES.RELATIONAL]);
   const NODE_OFFSET_X = 150;
   const NODE_OFFSET_Y = 150;
+
+  useEffect(() => {
+    setChronologicalSeq(highlights.filter((h) => h.id.startsWith(currentReadId.toString())).length);
+  }, [currentReadId]);
+
+  useEffect(() => {
+    setEdges(edges.map((e: Edge) => ({
+      ...e,
+      hidden: !displayEdgeTypes.includes(e.type ?? "")
+    })));
+  }, [displayEdgeTypes]);
 
   const onConnect = useCallback((connection: Connection) => {
     console.log("Connect", connection);
     const edge = { 
       ...connection, 
-      sourceHandle: `relation-handle-${connection.source}-source`,
-      targetHandle: `relation-handle-${connection.target}-target`,
-      type: EDGE_TYPES.RELATION, 
+      sourceHandle: `relational-handle-${connection.source}-source`,
+      targetHandle: `relational-handle-${connection.target}-target`,
+      type: EDGE_TYPES.RELATIONAL, 
       markerEnd: { type: MarkerType.Arrow },
+      hidden: !displayEdgeTypes.includes(EDGE_TYPES.RELATIONAL)
     };
     setEdges((prevEdges) => addEdge(edge, prevEdges));
   }, []);
-
-  useEffect(() => {
-    setTemporalSeq(highlights.filter((h) => h.id.startsWith(currentReadId.toString())).length);
-  }, [currentReadId]);
 
   const processHighlightText = (highlight: GhostHighlight) => {
     if (highlight.type === "text") {
@@ -131,7 +142,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight, highlights);
-    const id = `${currentReadId}-${temporalSeq}`;
+    const id = `${currentReadId}-${chronologicalSeq}`;
 
     setHighlights((prevHighlights: Array<ReadHighlight>) => [
       ...prevHighlights,
@@ -143,7 +154,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     ]);
 
     // add a node to the graph
-    const isFirstHighlight = temporalSeq === 0;
+    const isFirstHighlight = chronologicalSeq === 0;
     setNodes((prevNodes: Array<Node>) => [
       ...prevNodes,
       {
@@ -169,7 +180,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
     // add an edge to the graph
     if (!isFirstHighlight) {
-      // TODO: should temporal link capture the switch between reads?
+      // TODO: should chronological link capture the switch between reads?
       const lastId = nodes[nodes.length - 1].id;
       setEdges((prevEdges: Array<Edge>) => [
         ...prevEdges,
@@ -179,14 +190,15 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
           sourceHandle: `chronological-handle-${lastId}-source`,
           target: id,
           targetHandle: `chronological-handle-${id}-target`,
-          type: EDGE_TYPES.TEMPORAL,
+          type: EDGE_TYPES.CHRONOLOGICAL,
           markerEnd: { type: MarkerType.Arrow },
+          hidden: !displayEdgeTypes.includes(EDGE_TYPES.CHRONOLOGICAL)
         },
       ]);
     }
 
     setSelectedHighlightId(id);
-    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
+    setChronologicalSeq((prevChronologicalSeq) => prevChronologicalSeq + 1);
   };
 
   const updateNodeData = (nodeId: string, data: Partial<NodeData>) => {
@@ -205,7 +217,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     if (nodeIds.length === 0) return;
 
     // Create a new group node
-    const id = `${currentReadId}-${temporalSeq}`;
+    const id = `${currentReadId}-${chronologicalSeq}`;
     const groupNode = {
       id: id,
       type: NODE_TYPES.HIGHLIGHT,
@@ -228,7 +240,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     // Add the group node to the nodes array
     setNodes(prevNodes => [...prevNodes, groupNode]);
 
-    // add an temporal edge
+    // add an chronological edge
     console.log("nodes", nodes);
     const lastId = nodes[nodes.length - 1].id;
     setEdges((prevEdges: Array<Edge>) => [
@@ -239,8 +251,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         sourceHandle: `chronological-handle-${lastId}-source`,
         target: id,
         targetHandle: `chronological-handle-${id}-target`,
-        type: EDGE_TYPES.TEMPORAL,
+        type: EDGE_TYPES.CHRONOLOGICAL,
         markerEnd: { type: MarkerType.Arrow },
+        hidden: !displayEdgeTypes.includes(EDGE_TYPES.CHRONOLOGICAL)
       },
     ]);
 
@@ -248,16 +261,17 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     const newEdges = nodeIds.map(nodeId => ({
       id: `${id}-${nodeId}`,
       source: id,
-      sourceHandle: `relation-handle-${id}-source`,
+      sourceHandle: `relational-handle-${id}-source`,
       target: nodeId,
-      targetHandle: `relation-handle-${nodeId}-target`,
-      type: EDGE_TYPES.RELATION
+      targetHandle: `relational-handle-${nodeId}-target`,
+      type: EDGE_TYPES.RELATIONAL,
+      hidden: !displayEdgeTypes.includes(EDGE_TYPES.RELATIONAL)
     }));
 
     setEdges(prevEdges => [...prevEdges, ...newEdges]);
 
     // update control states
-    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
+    setChronologicalSeq((prevChronologicalSeq) => prevChronologicalSeq + 1);
   }
 
   const deleteHighlight = (highlightId: string) => {
@@ -275,7 +289,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setNodes([]);
     setEdges([]);
     setSelectedHighlightId(null);
-    setTemporalSeq(0);
+    setChronologicalSeq(0);
   };
 
   const createRead = (title: string, color: string) => {
@@ -325,6 +339,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         onSelectNode,
         setOnSelectNode,
         createGroupNode,
+        displayEdgeTypes,
+        setDisplayEdgeTypes,
         // Shared
         readRecords,
         isAddingNewRead,

@@ -13,23 +13,25 @@ import {
   ReactFlowProvider,
   type Node,
 } from "@xyflow/react";
-import { Box, IconButton } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, FormGroup, IconButton } from "@mui/material";
 import HighlightNode from "../components/graph-components/HighlightNode";
 import OverviewNode from "../components/graph-components/OverviewNode";
-import TemporalEdge from "../components/graph-components/TemporalEdge";
-import RelationEdge from "../components/graph-components/RelationEdge";
-import { PaperContext } from "../contexts/PaperContext";
+import ChronologicalEdge from "../components/graph-components/ChronologicalEdge";
+import RelationalEdge from "../components/graph-components/RelationalEdge";
+import { PaperContext, EDGE_TYPES } from "../contexts/PaperContext";
 import NodeEditor from "../components/node-components/NodeEditor";
 import { CloseFullscreen, OpenInFull } from "@mui/icons-material";
+import GroupNode from "../components/graph-components/GroupNode";
 
 const nodeTypes = {
   highlight: HighlightNode,
   overview: OverviewNode,
+  group: GroupNode,
 };
 
 const edgeTypes = {
-  temporal: TemporalEdge,
-  relation: RelationEdge,
+  chronological: ChronologicalEdge,
+  relational: RelationalEdge,
 };
 
 function Flow(props: any) {
@@ -45,7 +47,9 @@ function Flow(props: any) {
     setSelectedHighlightId,
     onSelectNode,
     setOnSelectNode,
-    createGroupNode
+    createGroupNode,
+    displayEdgeTypes,
+    setDisplayEdgeTypes
   } = props;
 
   const { fitView, getIntersectingNodes } = useReactFlow();
@@ -53,7 +57,7 @@ function Flow(props: any) {
 
   const onNodeDrag: OnNodeDrag = useCallback((_, node) => {
     const intersections = getIntersectingNodes(node).map((n) => n.id);
-    
+
     setNodes((ns: Node[]) =>
       ns.map((n) => ({
         ...n,
@@ -149,6 +153,10 @@ function Flow(props: any) {
     }
   }, [nodes, onSelectNode, selectedHighlightId]);
 
+  const changeDisplayEdgeTypes = (edgeType: string) => {
+    setDisplayEdgeTypes(displayEdgeTypes.includes(edgeType) ? displayEdgeTypes.filter((type: string) => type !== edgeType) : [...displayEdgeTypes, edgeType]);
+  }
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -169,6 +177,28 @@ function Flow(props: any) {
       <Controls onFitView={() => onLayout("TB")} style={{ color: "black" }} />
       <MiniMap />
 
+      <Panel position="top-left" style={{ color: "black" }}>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={displayEdgeTypes.includes(EDGE_TYPES.CHRONOLOGICAL)}
+                onClick={() => changeDisplayEdgeTypes(EDGE_TYPES.CHRONOLOGICAL)}
+              />
+            }
+            label="Chronological Link"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={displayEdgeTypes.includes(EDGE_TYPES.RELATIONAL)}
+                onClick={() => changeDisplayEdgeTypes(EDGE_TYPES.RELATIONAL)}
+              />
+            }
+            label="Relational Link"
+          />
+        </FormGroup>
+      </Panel>
       <Panel position="top-right">
         <IconButton onClick={openOverview}>{isOverview ? <CloseFullscreen /> : <OpenInFull />}</IconButton>
       </Panel>
@@ -193,7 +223,9 @@ export default function GraphPanel() {
     setSelectedHighlightId,
     onSelectNode,
     setOnSelectNode,
-    createGroupNode
+    createGroupNode,
+    displayEdgeTypes,
+    setDisplayEdgeTypes
   } = paperContext;
 
   return (
@@ -213,6 +245,8 @@ export default function GraphPanel() {
           onSelectNode={onSelectNode}
           setOnSelectNode={setOnSelectNode}
           createGroupNode={createGroupNode}
+          displayEdgeTypes={displayEdgeTypes}
+          setDisplayEdgeTypes={setDisplayEdgeTypes}
         />
       </ReactFlowProvider>
 

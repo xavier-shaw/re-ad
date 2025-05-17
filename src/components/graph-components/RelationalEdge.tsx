@@ -1,6 +1,6 @@
 import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath, useInternalNode } from "@xyflow/react";
 import { getEdgeParams } from "./utils";
-export default function RelationEdge({
+export default function RelationalEdge({
     source,
     target
 }: EdgeProps) {

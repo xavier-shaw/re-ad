@@ -32,21 +32,18 @@ export default function HighlightNode({ data }: NodeProps<Node>) {
       sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}
     >
 
-      {/* If handles are conditionally rendered and not present initially, you need to update the node internals https://reactflow.dev/docs/api/hooks/use-update-node-internals/ */}
-      {/* In this case we don't need to use useUpdateNodeInternals, since !isConnecting is true at the beginning and all handles are rendered initially. */}
       {!connection.inProgress && (
         <Handle
           className="connection-handle"
-          id={`relation-handle-${id}-source`}
+          id={`relational-handle-${id}-source`}
           position={Position.Right}
           type="source"
         />
       )}
-      {/* We want to disable the target handle, if the connection was started from this node */}
       {(!connection.inProgress || isTarget) && (
         <Handle
           className="connection-handle"
-          id={`relation-handle-${id}-target`}
+          id={`relational-handle-${id}-target`}
           position={Position.Left}
           type="target"
           isConnectableStart={false}
@@ -64,7 +61,7 @@ export default function HighlightNode({ data }: NodeProps<Node>) {
         className="connection-handle"
         id={`chronological-handle-${id}-source`}
         position={Position.Bottom}
-        type="source" isConnectableStart={false} 
+        type="source" isConnectableStart={false}
       />
 
       <Typography variant="body1">{label}</Typography>
