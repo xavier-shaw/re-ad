@@ -11,6 +11,7 @@ import {
   NodeMouseHandler,
   useReactFlow,
   ReactFlowProvider,
+  type Node,
 } from "@xyflow/react";
 import { Box, IconButton } from "@mui/material";
 import HighlightNode from "../components/graph-components/HighlightNode";
@@ -42,25 +43,47 @@ function Flow(props: any) {
     onConnect,
     selectedHighlightId,
     setSelectedHighlightId,
-    setOnSelectNode
+    onSelectNode,
+    setOnSelectNode,
+    createGroupNode
   } = props;
+
+  const { fitView, getIntersectingNodes } = useReactFlow();
   const [isOverview, setIsOverview] = useState(false);
 
-  const onNodeDrag: OnNodeDrag = (_, node) => {
-    console.log("drag event", node.data);
-  };
+  const onNodeDrag: OnNodeDrag = useCallback((_, node) => {
+    const intersections = getIntersectingNodes(node).map((n) => n.id);
+    
+    setNodes((ns: Node[]) =>
+      ns.map((n) => ({
+        ...n,
+        data: {
+          ...n.data,
+          intersected: intersections.includes(n.id) ? true : false,
+        },
+      })),
+    );
+  }, []);
+
+  const onNodeDragStop: OnNodeDrag = useCallback((_, node) => {
+    console.log("onNodeDragStop", node);
+    const intersections = getIntersectingNodes(node).map((n) => n.id);
+    if (intersections.length > 0) {
+      createGroupNode([node.id, ...intersections]);
+    }
+  }, [createGroupNode]);
 
   const onNodeClick: NodeMouseHandler = (event, node) => {
     if (isOverview || !event) return;
 
-    if (selectedHighlightId === node.id) {
-      setSelectedHighlightId(null);
-      setOnSelectNode(false);
-    } else {
-      setSelectedHighlightId(node.id);
-      setOnSelectNode(true);
-    }
+    setSelectedHighlightId(node.id);
   };
+
+  const onNodeDoubleClick: NodeMouseHandler = (event, node) => {
+    if (isOverview || !event) return;
+
+    setOnSelectNode((prev: boolean) => !prev);
+  }
 
   const openOverview = () => {
     console.log("open Overview");
@@ -73,8 +96,6 @@ function Flow(props: any) {
     setSelectedHighlightId(null);
     setIsOverview(!isOverview);
   };
-
-  const { fitView } = useReactFlow();
 
   const getLayoutedElements = (nodes: any, edges: any, options: any) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -118,15 +139,15 @@ function Flow(props: any) {
   }, [nodes, edges]);
 
   useEffect(() => {
-    if (selectedHighlightId) {
-      console.log("viewport change")
+    if (selectedHighlightId && onSelectNode) {
+      console.log("viewport focus on selected node");
       const selectedNode = nodes.find((node: any) => node.id === selectedHighlightId);
       fitView({ padding: 3.5, nodes: [selectedNode] });
     }
     else {
-      fitView();
+      fitView({ padding: 1 });
     }
-  }, [nodes]);
+  }, [nodes, onSelectNode, selectedHighlightId]);
 
   return (
     <ReactFlow
@@ -136,7 +157,9 @@ function Flow(props: any) {
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
       onNodeDrag={onNodeDrag}
+      onNodeDragStop={onNodeDragStop}
       onNodeClick={onNodeClick}
+      onNodeDoubleClick={onNodeDoubleClick}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       fitView
@@ -168,7 +191,9 @@ export default function GraphPanel() {
     onConnect,
     selectedHighlightId,
     setSelectedHighlightId,
-    setOnSelectNode
+    onSelectNode,
+    setOnSelectNode,
+    createGroupNode
   } = paperContext;
 
   return (
@@ -185,11 +210,13 @@ export default function GraphPanel() {
           onConnect={onConnect}
           selectedHighlightId={selectedHighlightId}
           setSelectedHighlightId={setSelectedHighlightId}
+          onSelectNode={onSelectNode}
           setOnSelectNode={setOnSelectNode}
+          createGroupNode={createGroupNode}
         />
       </ReactFlowProvider>
 
-      {selectedHighlightId && (
+      {onSelectNode && selectedHighlightId && (
         <Box
           style={{
             position: "absolute",

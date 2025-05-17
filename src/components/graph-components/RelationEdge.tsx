@@ -1,25 +1,33 @@
-import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath } from "@xyflow/react";
-
+import { EdgeProps, BaseEdge, EdgeLabelRenderer, getBezierPath, useInternalNode } from "@xyflow/react";
+import { getEdgeParams } from "./utils";
 export default function RelationEdge({
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition,
+    source,
+    target
 }: EdgeProps) {
+    const sourceNode = useInternalNode(source);
+    const targetNode = useInternalNode(target);
+
+    if (!sourceNode || !targetNode) {
+        return null;
+    }
+
+    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
+        sourceNode,
+        targetNode,
+    );
+
     const [edgePath, labelX, labelY] = getBezierPath({
-        sourceX,
-        sourceY,
-        sourcePosition,
-        targetX,
-        targetY,
-        targetPosition,
+        sourceX: sx,
+        sourceY: sy,
+        sourcePosition: sourcePos,
+        targetPosition: targetPos,
+        targetX: tx,
+        targetY: ty,
     });
 
     return (
         <>
-            <BaseEdge path={edgePath} style={{ stroke: 'black', strokeWidth: 2 }}/>
+            <BaseEdge path={edgePath} style={{ stroke: 'black', strokeWidth: 2 }} />
             <EdgeLabelRenderer>
                 <div
                     className="nodrag nopan"

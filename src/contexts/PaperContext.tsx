@@ -34,6 +34,7 @@ type PaperContextData = {
   onConnect: (connection: Connection) => void;
   onSelectNode: boolean;
   setOnSelectNode: (onSelectNode: boolean) => void;
+  createGroupNode: (nodeIds: string[]) => void;
   // Shared
   readRecords: Record<string, ReadRecord>;
   isAddingNewRead: boolean;
@@ -56,13 +57,24 @@ type ReadRecord = {
   color: string;
 };
 
+export const NODE_TYPES = {
+  HIGHLIGHT: "highlight",
+  OVERVIEW: "overview",
+  GROUP: "group",
+}
+
+export const EDGE_TYPES = {
+  TEMPORAL: "temporal",
+  RELATION: "relation",
+}
+
 export const PaperContextProvider = ({ children }: { children: React.ReactNode }) => {
   const tourContext = useContext(TourContext);
   if (!tourContext) {
     throw new Error("TourContext not found");
   }
   const { setRunTour } = tourContext;
-  
+
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
   const [highlights, setHighlights] = useState<Array<ReadHighlight>>([]);
@@ -84,7 +96,13 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
 
   const onConnect = useCallback((connection: Connection) => {
     console.log("Connect", connection);
-    const edge = { ...connection, type: "relation", markerEnd: { type: MarkerType.Arrow } };
+    const edge = { 
+      ...connection, 
+      sourceHandle: `relation-handle-${connection.source}-source`,
+      targetHandle: `relation-handle-${connection.target}-target`,
+      type: EDGE_TYPES.RELATION, 
+      markerEnd: { type: MarkerType.Arrow },
+    };
     setEdges((prevEdges) => addEdge(edge, prevEdges));
   }, []);
 
@@ -114,7 +132,6 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
   const addHighlight = (highlight: GhostHighlight) => {
     console.log("Add highlight", highlight, highlights);
     const id = `${currentReadId}-${temporalSeq}`;
-    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
 
     setHighlights((prevHighlights: Array<ReadHighlight>) => [
       ...prevHighlights,
@@ -131,7 +148,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       ...prevNodes,
       {
         id: id,
-        type: "highlight",
+        type: NODE_TYPES.HIGHLIGHT,
         data: {
           id: id,
           readRecordId: currentReadId,
@@ -146,30 +163,30 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
             ? Object.keys(readRecords).findIndex((id) => id === currentReadId) * NODE_OFFSET_X
             : nodes[nodes.length - 1].position.x,
           y: isFirstHighlight ? NODE_OFFSET_Y : nodes[nodes.length - 1].position.y + NODE_OFFSET_Y,
-        },
+        }
       },
     ]);
-
-    console.log("Nodes", nodes);
 
     // add an edge to the graph
     if (!isFirstHighlight) {
       // TODO: should temporal link capture the switch between reads?
-      const lastHighlightId = highlights[highlights.length - 1]?.id;
+      const lastId = nodes[nodes.length - 1].id;
       setEdges((prevEdges: Array<Edge>) => [
         ...prevEdges,
         {
           id: id,
-          source: lastHighlightId,
+          source: lastId,
+          sourceHandle: `chronological-handle-${lastId}-source`,
           target: id,
-          type: "temporal",
+          targetHandle: `chronological-handle-${id}-target`,
+          type: EDGE_TYPES.TEMPORAL,
           markerEnd: { type: MarkerType.Arrow },
         },
       ]);
     }
 
-    // set current node to be selected and open the node editor
     setSelectedHighlightId(id);
+    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
   };
 
   const updateNodeData = (nodeId: string, data: Partial<NodeData>) => {
@@ -181,9 +198,67 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
       return node;
     });
 
-    console.log("Updated nodes", currentNodes);
     setNodes(currentNodes);
   };
+
+  const createGroupNode = (nodeIds: string[]) => {
+    if (nodeIds.length === 0) return;
+
+    // Create a new group node
+    const id = `${currentReadId}-${temporalSeq}`;
+    const groupNode = {
+      id: id,
+      type: NODE_TYPES.HIGHLIGHT,
+      data: {
+        id: id,
+        readRecordId: currentReadId,
+        label: 'Group',
+        children: nodeIds,
+        notes: "",
+      },
+      position: {
+        // Position the group node at the average position of its children
+        x: nodes.filter(node => nodeIds.includes(node.id))
+          .reduce((sum, node) => sum + node.position.x, 0) / nodeIds.length + NODE_OFFSET_X, // Position slightly right
+        y: nodes.filter(node => nodeIds.includes(node.id))
+          .reduce((sum, node) => sum + node.position.y, 0) / nodeIds.length
+      }
+    };
+
+    // Add the group node to the nodes array
+    setNodes(prevNodes => [...prevNodes, groupNode]);
+
+    // add an temporal edge
+    console.log("nodes", nodes);
+    const lastId = nodes[nodes.length - 1].id;
+    setEdges((prevEdges: Array<Edge>) => [
+      ...prevEdges,
+      {
+        id: id,
+        source: lastId,
+        sourceHandle: `chronological-handle-${lastId}-source`,
+        target: id,
+        targetHandle: `chronological-handle-${id}-target`,
+        type: EDGE_TYPES.TEMPORAL,
+        markerEnd: { type: MarkerType.Arrow },
+      },
+    ]);
+
+    // Create edges from the group node to each child node
+    const newEdges = nodeIds.map(nodeId => ({
+      id: `${id}-${nodeId}`,
+      source: id,
+      sourceHandle: `relation-handle-${id}-source`,
+      target: nodeId,
+      targetHandle: `relation-handle-${nodeId}-target`,
+      type: EDGE_TYPES.RELATION
+    }));
+
+    setEdges(prevEdges => [...prevEdges, ...newEdges]);
+
+    // update control states
+    setTemporalSeq((prevTemporalSeq) => prevTemporalSeq + 1);
+  }
 
   const deleteHighlight = (highlightId: string) => {
     console.log("Delete highlight", highlightId);
@@ -249,6 +324,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         onConnect,
         onSelectNode,
         setOnSelectNode,
+        createGroupNode,
         // Shared
         readRecords,
         isAddingNewRead,
