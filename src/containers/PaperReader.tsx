@@ -10,6 +10,7 @@ import { TourContext } from "../contexts/TourContext";
 import Split from 'react-split';
 import { useReadingAnalytics } from "../contexts/ReadingAnalyticsContext";
 import { ReadingAnalytics } from "../components/ReadingAnalytics";
+import { HighlightTimeline } from '../components/HighlightTimeline';
 
 export const PaperReader = () => {
   const paperContext = useContext(PaperContext);
@@ -29,6 +30,7 @@ export const PaperReader = () => {
   const [title, setTitle] = useState<string | null>("");
   const [color, setColor] = useState<string | null>(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [viewType, setViewType] = useState<'graph' | 'analytics' | 'timeline'>('graph');
 
   // Start/stop reading tracking when currentRead changes
   useEffect(() => {
@@ -103,7 +105,10 @@ export const PaperReader = () => {
         />
       </div>
       <Box sx={{ height: "8%", width: "100%", display: "flex" }}>
-        <NavBar onAnalyticsClick={() => setShowAnalytics(!showAnalytics)} />
+        <NavBar 
+          onAnalyticsClick={() => setViewType(viewType === 'analytics' ? 'graph' : 'analytics')}
+          onTimelineClick={() => setViewType(viewType === 'timeline' ? 'graph' : 'timeline')}
+        />
       </Box>
       <Box sx={{ width: "100%", height: "92%" }}>
         <Split
@@ -122,11 +127,9 @@ export const PaperReader = () => {
             <PaperPanel />
           </Box>
           <Box className="panel graph-panel">
-            {showAnalytics ? (
-              <ReadingAnalytics readRecords={readRecords} />
-            ) : (
-              <GraphPanel />
-            )}
+            {viewType === 'graph' && <GraphPanel />}
+            {viewType === 'analytics' && <ReadingAnalytics readRecords={readRecords} />}
+            {viewType === 'timeline' && <HighlightTimeline />}
           </Box>
         </Split>
       </Box>

@@ -12,15 +12,16 @@ import {
   Tooltip
 } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
-import { Add, Analytics } from "@mui/icons-material";
+import { Add, Analytics, Timeline as TimelineIcon } from "@mui/icons-material";
 import logo from "/re-ad-logo.svg";
 import { TourContext } from "../../contexts/TourContext";
 
 interface NavBarProps {
   onAnalyticsClick: () => void;
+  onTimelineClick: () => void;
 }
 
-export default function NavBar({ onAnalyticsClick }: NavBarProps) {
+export default function NavBar({ onAnalyticsClick, onTimelineClick }: NavBarProps) {
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
@@ -135,10 +136,15 @@ export default function NavBar({ onAnalyticsClick }: NavBarProps) {
           </div>
         )}
       </Box>
-      <Box sx={{ mx: 2 }}>
+      <Box sx={{ mx: 2, display: 'flex', gap: 1 }}>
         <Tooltip title="Reading Analytics">
           <IconButton onClick={onAnalyticsClick}>
             <Analytics />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Highlight Timeline">
+          <IconButton onClick={onTimelineClick}>
+            <TimelineIcon />
           </IconButton>
         </Tooltip>
       </Box>

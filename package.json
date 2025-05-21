@@ -17,7 +17,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@google/generative-ai": "^0.23.0",
-    "@mui/icons-material": "^6.4.7",
+    "@mui/icons-material": "^6.4.11",
     "@mui/material": "^6.4.6",
     "@xyflow/react": "^12.4.4",
     "gh-pages": "^6.3.0",
@@ -29,6 +29,7 @@
     "react-pdf-highlighter-extended": "^8.1.0",
     "react-router-dom": "^7.4.0",
     "react-split": "^2.0.14",
+    "recharts": "^2.15.3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

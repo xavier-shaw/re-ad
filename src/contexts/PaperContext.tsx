@@ -126,6 +126,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         ...highlight,
         id: id,
         readRecordId: currentReadId,
+        timestamp: Date.now(),
       },
     ]);
 
