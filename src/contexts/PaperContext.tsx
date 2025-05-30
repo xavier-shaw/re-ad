@@ -23,6 +23,7 @@ type PaperContextData = {
   highlights: Array<ReadHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
+  setHighlights: (highlights: Array<ReadHighlight>) => void;
   deleteHighlight: (highlightId: string) => void;
   resetHighlights: () => void;
   // Graph
@@ -43,6 +44,7 @@ type PaperContextData = {
   currentReadId: string;
   setCurrentReadId: (readId: string) => void;
   currentRead: ReadRecord | null;
+  setReadRecords: (readRecords: Record<string, ReadRecord>) => void;
   displayedReads: Array<string>;
   hideRead: (readId: string) => void;
   showRead: (readId: string) => void;
@@ -245,6 +247,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         paperUrl,
         setPaperUrl,
         highlights,
+        setHighlights,
         addHighlight,
         updateNodeData,
         deleteHighlight,
@@ -268,6 +271,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         setCurrentReadId,
         currentRead,
         displayedReads,
+        setReadRecords,
         hideRead,
         showRead,
         selectedHighlightId,

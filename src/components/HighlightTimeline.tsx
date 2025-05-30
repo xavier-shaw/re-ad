@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Scatter } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Scatter } from 'recharts';
 import { PaperContext } from '../contexts/PaperContext';
 import { Box, Typography, IconButton } from '@mui/material';
 import { CloudDownload, CloudUpload } from "@mui/icons-material";
@@ -71,7 +71,7 @@ export const HighlightTimeline: React.FC = () => {
                 />
                 <RechartsTooltip />
                 <Legend />
-                {Object.keys(readRecords).map(readId => (
+                {/* {Object.keys(readRecords).map(readId => (
                     <Scatter
                         key={readId}
                         data={chartData.filter(d => d.readType === readRecords[readId].title)}
@@ -79,7 +79,13 @@ export const HighlightTimeline: React.FC = () => {
                         name={readRecords[readId].title}
                         fill={readRecords[readId].color}
                     />
-                ))}
+                ))} */}
+                <Line 
+                    type="monotone" 
+                    dataKey="pageNumber" 
+                    stroke="black" 
+                    dot={{ stroke: 'black', fill: 'black' }} 
+                />
             </LineChart>
             <Box sx={{ mx: 2, display: 'flex', gap: 1 }}>
                 <Tooltip title="Export Graph">
