@@ -23,6 +23,8 @@ export const HighlightTimeline: React.FC = () => {
         return {
             timestamp: new Date(highlight.timestamp).toLocaleTimeString(),
             pageNumber: highlight.position.boundingRect.pageNumber,
+            relativeY: highlight.position.boundingRect.y1, // Add relative y-coordinate
+            absoluteY: ((highlight.position.boundingRect.pageNumber-1)*1200 + highlight.position.boundingRect.y1)/1200,
             type: highlight.type,
             readType: readRecords[highlight.readRecordId].title,
             color: readRecords[highlight.readRecordId].color
@@ -61,30 +63,23 @@ export const HighlightTimeline: React.FC = () => {
             </Typography>
             <LineChart width={800} height={400} data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                    dataKey="timestamp" 
-                    label={{ value: 'Time', position: 'bottom' }} 
+                <XAxis
+                    dataKey="timestamp"
+                    label={{ value: 'Time', position: 'insideTop' }}
+                    orientation="top"
                 />
-                <YAxis 
-                    dataKey="pageNumber" 
-                    label={{ value: 'Page Number', angle: -90, position: 'insideLeft' }} 
+                <YAxis
+                    dataKey="absoluteY"
+                    label={{ value: 'Absolute Y Position', angle: -90, position: 'insideLeft' }}
+                    reversed={true}
                 />
                 <RechartsTooltip />
                 <Legend />
-                {/* {Object.keys(readRecords).map(readId => (
-                    <Scatter
-                        key={readId}
-                        data={chartData.filter(d => d.readType === readRecords[readId].title)}
-                        dataKey="pageNumber"
-                        name={readRecords[readId].title}
-                        fill={readRecords[readId].color}
-                    />
-                ))} */}
-                <Line 
-                    type="monotone" 
-                    dataKey="pageNumber" 
-                    stroke="black" 
-                    dot={{ stroke: 'black', fill: 'black' }} 
+                <Line
+                    type="monotone"
+                    dataKey="absoluteY"
+                    stroke="black"
+                    dot={{ stroke: 'black', fill: 'black' }}
                 />
             </LineChart>
             <Box sx={{ mx: 2, display: 'flex', gap: 1 }}>
