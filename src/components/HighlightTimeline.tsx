@@ -1,15 +1,17 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Scatter } from 'recharts';
+import React, { useContext } from 'react';
+import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, Scatter } from 'recharts';
 import { PaperContext } from '../contexts/PaperContext';
-import { useContext } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
+import { CloudDownload, CloudUpload } from "@mui/icons-material";
+import Tooltip from '@mui/material/Tooltip';
+import { exportGraph, importGraph } from '../utils/graphIO';
 
 export const HighlightTimeline: React.FC = () => {
     const paperContext = useContext(PaperContext);
     if (!paperContext) {
         throw new Error("PaperContext not found");
     }
-    const { highlights, readRecords } = paperContext;
+    const { highlights, readRecords, nodes, edges, setHighlights, setNodes, setEdges, setReadRecords } = paperContext;
 
     // Add debugging
     console.log('Highlights:', highlights);
@@ -29,6 +31,29 @@ export const HighlightTimeline: React.FC = () => {
 
     console.log('Chart Data:', chartData);  // Add debugging
 
+    const handleExportGraph = () => {
+        exportGraph({
+            highlights,
+            nodes,
+            edges,
+            readRecords,
+        });
+    };
+
+    const handleImportGraph = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            importGraph(file, setGraphState);
+        }
+    };
+
+    const setGraphState = (data: any) => {
+        setHighlights(data.highlights || []);
+        setNodes(data.nodes || []);
+        setEdges(data.edges || []);
+        setReadRecords(data.readRecords || {});
+    };
+
     return (
         <Box sx={{ p: 2, height: '100%', overflow: 'auto' }}>
             <Typography variant="h5" sx={{ mb: 2, color: 'text.secondary' }}>
@@ -44,7 +69,7 @@ export const HighlightTimeline: React.FC = () => {
                     dataKey="pageNumber" 
                     label={{ value: 'Page Number', angle: -90, position: 'insideLeft' }} 
                 />
-                <Tooltip />
+                <RechartsTooltip />
                 <Legend />
                 {Object.keys(readRecords).map(readId => (
                     <Scatter
@@ -56,6 +81,19 @@ export const HighlightTimeline: React.FC = () => {
                     />
                 ))}
             </LineChart>
+            <Box sx={{ mx: 2, display: 'flex', gap: 1 }}>
+                <Tooltip title="Export Graph">
+                    <IconButton onClick={handleExportGraph}>
+                        <CloudDownload />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Import Graph">
+                    <IconButton component="label">
+                        <CloudUpload />
+                        <input type="file" accept="application/json" hidden onChange={handleImportGraph} />
+                    </IconButton>
+                </Tooltip>
+            </Box>
         </Box>
     );
 }; 
