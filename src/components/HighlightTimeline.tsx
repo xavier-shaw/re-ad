@@ -11,7 +11,7 @@ export const HighlightTimeline: React.FC = () => {
     if (!paperContext) {
         throw new Error("PaperContext not found");
     }
-    const { highlights, readRecords, nodes, edges, setHighlights, setNodes, setEdges, setReadRecords } = paperContext;
+    const { highlights, readRecords, nodes, edges, setHighlights, setNodes, setEdges, setReadRecords, paperUrl } = paperContext;
 
     // Add debugging
     console.log('Highlights:', highlights);
@@ -39,6 +39,7 @@ export const HighlightTimeline: React.FC = () => {
             nodes,
             edges,
             readRecords,
+            pdfUrl: paperUrl
         });
     };
 
@@ -70,7 +71,7 @@ export const HighlightTimeline: React.FC = () => {
                 />
                 <YAxis
                     dataKey="absoluteY"
-                    label={{ value: 'Absolute Y Position', angle: -90, position: 'insideLeft' }}
+                    label={{ value: 'Page Number', angle: -90, position: 'insideLeft' }}
                     reversed={true}
                 />
                 <RechartsTooltip />
@@ -79,7 +80,7 @@ export const HighlightTimeline: React.FC = () => {
                     type="monotone"
                     dataKey="absoluteY"
                     stroke="black"
-                    dot={{ stroke: 'black', fill: 'black' }}
+                    dot={{ stroke: 'blue', fill: 'blue' }}
                 />
             </LineChart>
             <Box sx={{ mx: 2, display: 'flex', gap: 1 }}>
