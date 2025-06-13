@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import "../styles/PaperPanel.css";
 import {
   PdfHighlighter,
@@ -10,8 +10,9 @@ import HighlightContainer from "../components/paper-components/HighlightContaine
 import Sidebar from "../components/paper-components/Sidebar";
 import { PaperContext } from "../contexts/PaperContext";
 import ExpandableTip from "../components/paper-components/ExpandableTip";
-import { ArrowBack, UploadFile } from "@mui/icons-material";
+import { ArrowBack, UploadFile, CloudUpload } from "@mui/icons-material";
 import { TourContext } from "../contexts/TourContext";
+import { importGraph } from "../utils/graphIO";
 
 function PaperPanel() {
   const paperContext = useContext(PaperContext);
@@ -29,7 +30,11 @@ function PaperPanel() {
     currentReadId,
     readRecords,
     displayedReads,
-    onSelectNode
+    onSelectNode,
+    setHighlights,
+    setNodes,
+    setEdges,
+    setReadRecords
   } = paperContext;
 
   const tourContext = useContext(TourContext);
@@ -83,6 +88,20 @@ function PaperPanel() {
     }
   };
 
+  const handleGraphUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      importGraph(file, setGraphState, setPaperUrl);
+    }
+  };
+
+  const setGraphState = (data: any) => {
+    setHighlights(data.highlights || []);
+    setNodes(data.nodes || []);
+    setEdges(data.edges || []);
+    setReadRecords(data.readRecords || {});
+  };
+
   return (
     <Box style={{ width: "100%", height: "100%", display: "flex", flexDirection: "row" }}>
       {!paperUrl ?
@@ -94,7 +113,7 @@ function PaperPanel() {
           justifyContent: "center",
           alignItems: "center",
         }}>
-          {/* Hidden Input for File Upload */}
+          {/* Hidden Inputs for File Uploads */}
           <input
             type="file"
             accept="application/pdf"
@@ -102,18 +121,37 @@ function PaperPanel() {
             style={{ display: "none" }}
             id="pdf-upload"
           />
+          <input
+            type="file"
+            accept="application/zip"
+            onChange={handleGraphUpload}
+            style={{ display: "none" }}
+            id="graph-upload"
+          />
 
-          {/* Button to Trigger File Upload */}
-          <label htmlFor="pdf-upload">
-            <Button
-              className="upload-pdf"
-              variant="outlined"
-              component="span"
-              startIcon={<UploadFile />}
-            >
-              Upload PDF
-            </Button>
-          </label>
+          {/* Buttons to Trigger File Uploads */}
+          <Stack direction="row" spacing={2}>
+            <label htmlFor="pdf-upload">
+              <Button
+                className="upload-pdf"
+                variant="outlined"
+                component="span"
+                startIcon={<UploadFile />}
+              >
+                Upload PDF
+              </Button>
+            </label>
+            <label htmlFor="graph-upload">
+              <Button
+                className="upload-graph"
+                variant="outlined"
+                component="span"
+                startIcon={<CloudUpload />}
+              >
+                Upload Graph & PDF
+              </Button>
+            </label>
+          </Stack>
         </Box>
         :
         <>

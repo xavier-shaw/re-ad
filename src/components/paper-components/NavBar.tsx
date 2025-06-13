@@ -8,15 +8,20 @@ import {
   FormControl,
   IconButton,
   MenuItem,
-  Select
+  Select,
+  Tooltip
 } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
-import { Add } from "@mui/icons-material";
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import { Add, Analytics, Timeline as TimelineIcon, TipsAndUpdates } from "@mui/icons-material";
 import logo from "/re-ad-logo.svg";
 import { TourContext } from "../../contexts/TourContext";
 
-export default function NavBar() {
+interface NavBarProps {
+  onAnalyticsClick: () => void;
+  onTimelineClick: () => void;
+}
+
+export default function NavBar({ onAnalyticsClick, onTimelineClick }: NavBarProps) {
   const paperContext = useContext(PaperContext);
   if (!paperContext) {
     throw new Error("PaperContext not found");
@@ -58,7 +63,7 @@ export default function NavBar() {
       <div className="logo-text">
         <img src={logo} height={40} alt="re:ad" />
         <IconButton sx={{ ml: 3 }} className="mui-button" size="small" onClick={handleStartTour}>
-          <TipsAndUpdatesIcon />
+          <TipsAndUpdates />
         </IconButton>
       </div>
 
@@ -101,7 +106,6 @@ export default function NavBar() {
           </IconButton>
         ) : (
           <Button className="mui-button add-new-read-btn" size="small" variant="text" startIcon={<Add />} onClick={handleAddRead}>
-            {/* for some ungodly reason this text refuses to be centered so this will do */}
             <span style={{ lineHeight: 0 }}>
               new read
             </span>
@@ -141,6 +145,18 @@ export default function NavBar() {
             <p>none</p>
           </div>
         )}
+      </Box>
+      <Box sx={{ mx: 2, display: 'flex', gap: 1 }}>
+        <Tooltip title="Reading Analytics">
+          <IconButton onClick={onAnalyticsClick}>
+            <Analytics />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Highlight Timeline">
+          <IconButton onClick={onTimelineClick}>
+            <TimelineIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
     </div>
   );

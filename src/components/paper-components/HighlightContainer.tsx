@@ -9,6 +9,7 @@ export interface ReadHighlight extends Highlight {
     id: string;
     readRecordId: string;
     content: Content;
+    timestamp: number;
 }
 
 interface HighlightContainerProps {

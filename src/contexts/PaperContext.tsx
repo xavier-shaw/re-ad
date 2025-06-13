@@ -14,6 +14,7 @@ import {
 import { ReadHighlight } from "../components/paper-components/HighlightContainer";
 import { NodeData } from "../components/node-components/NodeEditor";
 import { TourContext } from "./TourContext";
+import { useReadingAnalytics } from "../contexts/ReadingAnalyticsContext";
 
 type PaperContextData = {
   // Paper
@@ -22,6 +23,7 @@ type PaperContextData = {
   highlights: Array<ReadHighlight>;
   addHighlight: (highlight: GhostHighlight) => void;
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
+  setHighlights: (highlights: Array<ReadHighlight>) => void;
   deleteHighlight: (highlightId: string) => void;
   resetHighlights: () => void;
   // Graph
@@ -41,6 +43,8 @@ type PaperContextData = {
   createRead: (title: string, color: string) => void;
   currentReadId: string;
   setCurrentReadId: (readId: string) => void;
+  currentRead: ReadRecord | null;
+  setReadRecords: (readRecords: Record<string, ReadRecord>) => void;
   displayedReads: Array<string>;
   hideRead: (readId: string) => void;
   showRead: (readId: string) => void;
@@ -62,6 +66,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     throw new Error("TourContext not found");
   }
   const { setRunTour } = tourContext;
+  
+  const { trackHighlight } = useReadingAnalytics();
   
   // Paper
   const [paperUrl, setPaperUrl] = useState<string | null>(null);
@@ -122,8 +128,12 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         ...highlight,
         id: id,
         readRecordId: currentReadId,
+        timestamp: Date.now(),
       },
     ]);
+
+    // Track the highlight in analytics
+    trackHighlight(currentReadId, highlight.type);
 
     // add a node to the graph
     const isFirstHighlight = temporalSeq === 0;
@@ -228,6 +238,8 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
     setDisplayedReads((prevDisplayedReads) => [...prevDisplayedReads, readId]);
   };
 
+  const currentRead = readRecords[currentReadId] || null;
+
   return (
     <PaperContext.Provider
       value={{
@@ -235,6 +247,7 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         paperUrl,
         setPaperUrl,
         highlights,
+        setHighlights,
         addHighlight,
         updateNodeData,
         deleteHighlight,
@@ -253,14 +266,16 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
         readRecords,
         isAddingNewRead,
         setIsAddingNewRead,
+        createRead,
         currentReadId,
         setCurrentReadId,
-        selectedHighlightId,
-        setSelectedHighlightId,
-        createRead,
+        currentRead,
         displayedReads,
+        setReadRecords,
         hideRead,
         showRead,
+        selectedHighlightId,
+        setSelectedHighlightId,
       }}
     >
       {children}

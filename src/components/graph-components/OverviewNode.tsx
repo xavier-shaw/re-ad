@@ -20,7 +20,18 @@ export default function OverviewNode({ data }: NodeProps<Node>) {
             id={`node-${id}`}
             sx={{ backgroundColor: isDisplayed ? color : "#e6e6e6" }}
         >
-            <Handle type="target" position={Position.Top} />
+            <Handle 
+                type="target" 
+                position={Position.Top} 
+                style={{
+                    width: '10px',
+                    height: '10px',
+                    background: '#fff',
+                    border: '2px solid #1a192b',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                }}
+            />
             <Typography variant="body1">{label}</Typography>
             {type === "area" &&
                 <>
@@ -29,7 +40,18 @@ export default function OverviewNode({ data }: NodeProps<Node>) {
                 </>
             }
             <Typography variant="caption">{notes}</Typography>
-            <Handle type="source" position={Position.Bottom} />
+            <Handle 
+                type="source" 
+                position={Position.Bottom} 
+                style={{
+                    width: '10px',
+                    height: '10px',
+                    background: '#fff',
+                    border: '2px solid #1a192b',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                }}
+            />
         </Box>
     );
 }
