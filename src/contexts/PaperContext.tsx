@@ -174,6 +174,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
             ? Object.keys(readRecords).findIndex((id) => id === currentReadId) * NODE_OFFSET_X
             : nodes[nodes.length - 1].position.x,
           y: isFirstHighlight ? NODE_OFFSET_Y : nodes[nodes.length - 1].position.y + NODE_OFFSET_Y,
+        },
+        style: {
+          backgroundColor: readRecords[currentReadId].color,
         }
       },
     ]);
@@ -234,6 +237,9 @@ export const PaperContextProvider = ({ children }: { children: React.ReactNode }
           .reduce((sum, node) => sum + node.position.x, 0) / nodeIds.length + NODE_OFFSET_X, // Position slightly right
         y: nodes.filter(node => nodeIds.includes(node.id))
           .reduce((sum, node) => sum + node.position.y, 0) / nodeIds.length
+      },
+      style: {
+        backgroundColor: readRecords[currentReadId].color,
       }
     };
 
